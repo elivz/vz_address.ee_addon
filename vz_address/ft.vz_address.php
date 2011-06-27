@@ -57,68 +57,8 @@ class Vz_address_ft extends EE_Fieldtype {
         	$this->cache['css'] = TRUE;
         }
     }
-	
-	// --------------------------------------------------------------------
-	
-    
-    /**
-     * Create the settings ui
-     */
-    private function _get_settings($settings)
-    {
-/*
-		$this->EE->lang->loadfile('vz_address');
-		$this->EE->load->helper('form');
-        
-        $mode = isset($settings['mode']) ? $settings['mode'] : 0;
-        $row1 = array(
-            $this->EE->lang->line('mode_label_cell'),
-            form_dropdown('mode', $this->modes(), $mode)
-        );
-        
-        $member_groups = isset($settings['member_groups']) ? $settings['member_groups'] : 0;
-		$row2 = array(
-            $this->EE->lang->line('member_groups_label_cell'),
-            form_multiselect('member_groups[]', $this->_get_member_groups(), $member_groups)
-        );
-        
-        return array( $row1, $row2 );
-*/
-    }
-    
 
-    /**
-     * Display Field Settings
-     */
-/*
-    function display_settings($field_settings)
-    {
-        $settings_array = $this->_get_settings($field_settings);
-        
-        $this->EE->table->add_row($settings_array[0]);
-        $this->EE->table->add_row($settings_array[1]);
-    }
 
-    function save_settings($data)
-    {
-    	return array(
-    		'mode' => $this->EE->input->post('mode'),
-    		'member_groups' => $this->EE->input->post('member_groups')
-    	);
-    }
-*/
-	
-	/**
-	 * Display Cell Settings
-	 */
-/*
-	function display_cell_settings($cell_settings)
-	{
-		return $this->_get_settings($cell_settings);
-	}
-*/
-
-	
 	// --------------------------------------------------------------------
 	
 	
