@@ -1,0 +1,212 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * VZ Address Class
+ *
+ * @author    Eli Van Zoeren <eli@elivz.com>
+ * @copyright Copyright (c) 2011 Eli Van Zoeren
+ * @license   http://creativecommons.org/licenses/by-sa/3.0/ Attribution-Share Alike 3.0 Unported
+ */
+ 
+class Vz_address_ft extends EE_Fieldtype {
+
+    public $info = array(
+        'name'      => 'VZ Address',
+        'version'   => '0.9.0',
+    );
+	    
+    var $has_array_data = TRUE;
+    
+    var $country_codes = array("AF","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BA","BW","BV","BR","IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC","CO","KM","CG","CD","CK","CR","CI","HR","CU","CY","CZ","DK","DJ","DM","DO","TP","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","FX","GF","PF","TF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GN","GW","GY","HT","HM","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IL","IT","JM","JP","JO","KZ","KE","KI","KP","KR","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MK","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","MS","MA","MZ","MM","NA","NR","NP","NL","AN","NC","NZ","NI","NE","NG","NU","NF","MP","NO","OM","PK","PW","PA","PG","PY","PE","PH","PN","PL","PT","PR","QA","RE","RO","RU","RW","KN","LC","VC","WS","SM","ST","SA","SN","SC","SL","SG","SK","SI","SB","SO","ZA","GS","ES","LK","SH","PM","SD","SR","SJ","SZ","SE","CH","SY","TW","TJ","TZ","TH","TG","TK","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UM","UY","UZ","VU","VE","VN","VG","VI","WF","EH","YE","YU","ZM","ZW");
+  
+	/**
+	 * Fieldtype Constructor
+	 */
+	function Vz_address_ft()
+	{
+        parent::EE_Fieldtype();
+
+        if (!isset($this->EE->session->cache['vz_address']))
+        {
+            $this->EE->session->cache['vz_address'] = array('css' => FALSE, 'countries' => array());
+        }
+        $this->cache =& $this->EE->session->cache['vz_address'];
+		
+        // Cache the array of country names
+		$this->EE->lang->loadfile('vz_address');
+        foreach ($this->country_codes as $country)
+        {
+            $this->cache['countries'][$country] = $this->EE->lang->line($country);
+        }
+	}
+	
+	/**
+	 * Include the CSS styles, but only once
+	 */
+	private function _include_css()
+	{
+        if ( !$this->cache['css'] )
+        {
+            $this->EE->cp->add_to_head('<style type="text/css">
+                .vz_address { padding-bottom: 0.5em; }
+                .vz_address_street_field, .vz_address_street_2_field, .vz_address_city_field { float:left; width:48%; padding-right:2%; }
+                .vz_address_region_field, .vz_address_postal_code_field { float:left; width:23%; padding-right:2%; }
+                .vz_address_region_cell, .vz_address_postal_code_cell { float:left; width:48%; padding-right:2%; }
+            </style>');
+        	
+        	$this->cache['css'] = TRUE;
+        }
+    }
+	
+	// --------------------------------------------------------------------
+	
+    
+    /**
+     * Create the settings ui
+     */
+    private function _get_settings($settings)
+    {
+/*
+		$this->EE->lang->loadfile('vz_address');
+		$this->EE->load->helper('form');
+        
+        $mode = isset($settings['mode']) ? $settings['mode'] : 0;
+        $row1 = array(
+            $this->EE->lang->line('mode_label_cell'),
+            form_dropdown('mode', $this->modes(), $mode)
+        );
+        
+        $member_groups = isset($settings['member_groups']) ? $settings['member_groups'] : 0;
+		$row2 = array(
+            $this->EE->lang->line('member_groups_label_cell'),
+            form_multiselect('member_groups[]', $this->_get_member_groups(), $member_groups)
+        );
+        
+        return array( $row1, $row2 );
+*/
+    }
+    
+
+    /**
+     * Display Field Settings
+     */
+/*
+    function display_settings($field_settings)
+    {
+        $settings_array = $this->_get_settings($field_settings);
+        
+        $this->EE->table->add_row($settings_array[0]);
+        $this->EE->table->add_row($settings_array[1]);
+    }
+
+    function save_settings($data)
+    {
+    	return array(
+    		'mode' => $this->EE->input->post('mode'),
+    		'member_groups' => $this->EE->input->post('member_groups')
+    	);
+    }
+*/
+	
+	/**
+	 * Display Cell Settings
+	 */
+/*
+	function display_cell_settings($cell_settings)
+	{
+		return $this->_get_settings($cell_settings);
+	}
+*/
+
+	
+	// --------------------------------------------------------------------
+	
+	
+	/**
+     * Generate the publish page UI
+     */
+    private function _address_form($name, $data, $is_cell=FALSE)
+    {
+		$this->EE->load->helper('form');
+		$this->EE->lang->loadfile('vz_address');
+		
+        $this->_include_css();
+		
+        $form = "";
+        $fields = array(
+            'street' => '',
+            'street_2' => '',
+            'city' => '',
+            'region' => '',
+            'postal_code' => '',
+            'country' => 'US'
+        );
+        
+        // Set default values
+        $data = unserialize(htmlspecialchars_decode($data));
+        if (!is_array($data)) $data = array();
+        $data = array_merge($fields, $data);
+        
+        foreach(array_keys($fields) as $field)
+        {
+            $form .= '<div class="vz_address vz_address_'.$field.($is_cell ? '_cell' : '_field').'">';
+            $form .= form_label($this->EE->lang->line($field), $name.'_'.$field);
+            
+            if ($field == 'country')
+            {
+                // Output a select box for the country
+                $form .= form_dropdown($name.'['.$field.']', $this->cache['countries'], $data[$field], 'id="'.$name.'_'.$field.'"');
+            }
+            else
+            {
+                // All other fields are just text inputs
+                $form .= form_input($name.'['.$field.']', $data[$field], 'id="'.$name.'_'.$field.'" class="vz_address_'.$field.'"');
+            }
+            $form .= '</div>';
+        }
+        
+        return $form;
+    }
+    
+    /**
+     * Display Field
+     */
+    function display_field($field_data)
+    {
+        return $this->_address_form($this->field_name, $field_data);
+    }
+    
+    /**
+     * Display Cell
+     */
+    function display_cell($cell_data)
+    {
+        return $this->_address_form($this->cell_name, $cell_data, TRUE);
+    }
+
+	
+	// --------------------------------------------------------------------
+    
+    /**
+     * Save Field
+     */
+    function save($data)
+    {
+    	return serialize($data);
+    }
+    
+    /**
+     * Save Cell
+     */
+    function save_cell($data)
+    {
+        return serialize($data);
+    }
+
+	
+	// --------------------------------------------------------------------
+	
+
+}
+
+/* End of file ft.vz_address.php */
