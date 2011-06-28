@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.0.0',
+        'version'   => '1.0.1',
     );
 	    
     var $has_array_data = TRUE;
@@ -49,6 +49,8 @@ class Vz_address_ft extends EE_Fieldtype {
         {
             $this->EE->cp->add_to_head('<style type="text/css">
                 .vz_address { padding-bottom: 0.5em; }
+                .vz_address label { display:block; }
+                .vz_address input { width:99%; padding:4px; }
                 .vz_address_street_field, .vz_address_street_2_field, .vz_address_city_field { float:left; width:48%; padding-right:2%; }
                 .vz_address_region_field, .vz_address_postal_code_field { float:left; width:23%; padding-right:2%; }
                 .vz_address_region_cell, .vz_address_postal_code_cell { float:left; width:48%; padding-right:2%; }
