@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.0.1',
+        'version'   => '1.0.2',
     );
 	    
     var $has_array_data = TRUE;
@@ -168,6 +168,9 @@ class Vz_address_ft extends EE_Fieldtype {
         {
             switch ($style)
             {
+                case 'inline' :
+                    $output = "{$address['street']}, ".($address['street_2'] ? $address['street_2'].', ' : '')."{$address['city']}, {$address['region']} {$address['postal_code']}, {$this->EE->lang->line($address['country'])}";
+                    break;
                 case 'plain' :
                     $output = "
                         {$address['street']}

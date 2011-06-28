@@ -8,9 +8,9 @@ Template Tags
 
 ### Single Tags ###
 
-    {address_field [markup="microformat|schema|rdfa|plain"]}
+    {address_field [style="microformat|schema|rdfa|plain|inline"]}
 
-Will output the complete address, in a standard format. Use the `markup=""` attribute for code that supports one of the markup standards for parseable content (defaults to microformats).
+Will output the complete address, in a standard format. Use the `style=""` attribute to get code that supports one of the markup standards for parseable content (defaults to microformats) or to get the address with no html markup at all (plain or inline).
 
     {address_field:street}
     {address_field:street_2}
@@ -19,7 +19,7 @@ Will output the complete address, in a standard format. Use the `markup=""` attr
     {address_field:postal_code}
     {address_field:country [code="yes"]}
 
-Output particular pieces of the address. If you use the parameter `code="yes"` on the country tag, you will the the international country code rather than the full name.
+Output particular pieces of the address. If you use the parameter `code="yes"` on the country tag, you will get the the international country code rather than the full name.
 
 ### Tag Pair ###
 
