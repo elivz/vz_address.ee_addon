@@ -24,8 +24,8 @@ Output particular pieces of the address. If you use the parameter `code="yes"` o
 ### Tag Pair ###
 
     {address_field}
-        {address}
-        {address_2}
+        {street}
+        {street_2}
         {city}, {region} {postal_code}
         {country}
     {/address_field}
