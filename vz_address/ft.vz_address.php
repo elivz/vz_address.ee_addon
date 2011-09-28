@@ -69,7 +69,6 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     private function _address_form($name, $data, $is_cell=FALSE)
     {
-echo $name;
 		$this->EE->load->helper('form');
 		$this->EE->lang->loadfile('vz_address');
 		
@@ -86,7 +85,6 @@ echo $name;
         );
         
         // Set default values
-		var_dump($data);
         $data = unserialize(htmlspecialchars_decode($data));
         if (!is_array($data)) $data = array();
         $data = array_merge($fields, $data);
