@@ -69,6 +69,7 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     private function _address_form($name, $data, $is_cell=FALSE)
     {
+echo $name;
 		$this->EE->load->helper('form');
 		$this->EE->lang->loadfile('vz_address');
 		
@@ -85,6 +86,7 @@ class Vz_address_ft extends EE_Fieldtype {
         );
         
         // Set default values
+		var_dump($data);
         $data = unserialize(htmlspecialchars_decode($data));
         if (!is_array($data)) $data = array();
         $data = array_merge($fields, $data);
@@ -125,6 +127,14 @@ class Vz_address_ft extends EE_Fieldtype {
     {
         return $this->_address_form($this->cell_name, $cell_data, TRUE);
     }
+	
+    /**
+     * Display for Low Variables
+     */
+    function display_var_field($field_data)
+    {
+        return $this->_address_form($this->field_name, $field_data);
+    }
 
 	
 	// --------------------------------------------------------------------
@@ -144,6 +154,14 @@ class Vz_address_ft extends EE_Fieldtype {
     {
         return serialize($data);
     }
+	
+    /**
+     * Save Low Variable
+     */
+    function save_var_field($data)
+    {
+    	return serialize($data);
+    }
 
 	
 	// --------------------------------------------------------------------
@@ -154,6 +172,25 @@ class Vz_address_ft extends EE_Fieldtype {
     function pre_process($data)
     {
         return unserialize(htmlspecialchars_decode($data));
+    }
+	
+	/**
+	 * Low Variables Display
+	 * Note that you MUST use the {exp:low_variables:parse} syntax to parse VZ_Address variables created with LV.
+	 * For single tags, that looks as follows: 
+	 *     {exp:low_variables:parse var="address_field_name" style="rdfa"}
+	 * For tag pairs, it looks like this:
+	 *     {exp:low_variables:parse var="address_field_name" multiple="yes"}
+	 *          {street} {!-- note lack of address_field_name: prefix! --}
+	 *			{street_2}
+	 *			{city}, {region}, {postal_code}
+	 *			{country}
+	 *     {/exp:low_variables:parse}
+	 */
+    function display_var_tag($var_data, $tagparams, $tagdata) 
+    {
+	$mydata = $this->pre_process($var_data); // preprocess the serialized array, which comes in as a string
+	return $this->replace_tag($mydata, $tagparams, $tagdata); // run the normal "replace_tag" function
     }
 
     /**
