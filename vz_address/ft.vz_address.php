@@ -86,6 +86,7 @@ class Vz_address_ft extends EE_Fieldtype {
         
         // Set default values
         if (!is_array($data)) $data = unserialize(htmlspecialchars_decode($data));
+        if (!is_array($data)) $data = array();
         $data = array_merge($fields, $data);
         
         foreach(array_keys($fields) as $field)
