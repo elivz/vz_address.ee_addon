@@ -85,8 +85,7 @@ class Vz_address_ft extends EE_Fieldtype {
         );
         
         // Set default values
-        $data = unserialize(htmlspecialchars_decode($data));
-        if (!is_array($data)) $data = array();
+        if (!is_array($data)) $data = unserialize(htmlspecialchars_decode($data));
         $data = array_merge($fields, $data);
         
         foreach(array_keys($fields) as $field)
@@ -246,7 +245,7 @@ class Vz_address_ft extends EE_Fieldtype {
 	 */
     function display_var_tag($var_data, $tagparams, $tagdata) 
     {
-        $data = unserialize(htmlspecialchars_decode($var_data);
+        $data = unserialize(htmlspecialchars_decode($var_data));
         return $this->replace_tag($data, $tagparams, $tagdata);
     }
     
