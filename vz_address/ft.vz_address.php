@@ -158,38 +158,11 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function save_var_field($data)
     {
-    	return serialize($data);
+        return serialize($data);
     }
 
 	
 	// --------------------------------------------------------------------
-	
-	/*
-	 * Pre-parse to unserialize
-	 */
-    function pre_process($data)
-    {
-        return unserialize(htmlspecialchars_decode($data));
-    }
-	
-	/**
-	 * Low Variables Display
-	 * Note that you MUST use the {exp:low_variables:parse} syntax to parse VZ_Address variables created with LV.
-	 * For single tags, that looks as follows: 
-	 *     {exp:low_variables:parse var="address_field_name" style="rdfa"}
-	 * For tag pairs, it looks like this:
-	 *     {exp:low_variables:parse var="address_field_name" multiple="yes"}
-	 *          {street} {!-- note lack of address_field_name: prefix! --}
-	 *			{street_2}
-	 *			{city}, {region}, {postal_code}
-	 *			{country}
-	 *     {/exp:low_variables:parse}
-	 */
-    function display_var_tag($var_data, $tagparams, $tagdata) 
-    {
-	$mydata = $this->pre_process($var_data); // preprocess the serialized array, which comes in as a string
-	return $this->replace_tag($mydata, $tagparams, $tagdata); // run the normal "replace_tag" function
-    }
 
     /**
      * Display Tag
@@ -267,6 +240,15 @@ class Vz_address_ft extends EE_Fieldtype {
             
         return $output;
     }
+	
+	/**
+     * Display Low Variables tag
+	 */
+    function display_var_tag($var_data, $tagparams, $tagdata) 
+    {
+        $data = unserialize(htmlspecialchars_decode($var_data);
+        return $this->replace_tag($data, $tagparams, $tagdata);
+    }
     
     /*
      * Individual address pieces
@@ -302,7 +284,6 @@ class Vz_address_ft extends EE_Fieldtype {
             return $this->EE->lang->line($address['country']);
         }
     }
-  
 }
 
 /* End of file ft.vz_address.php */

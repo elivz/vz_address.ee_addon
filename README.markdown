@@ -32,7 +32,29 @@ Output particular pieces of the address. If you use the parameter `code="yes"` o
 
 If you need more control over the output, use the tag pair to output each part of the address individually.
 
+### Low Variables Support ###
+
+Note that you *must* use the `{exp:low_variables:parse}` syntax to parse VZ Address variables created with Low Variables.
+
+For single tags:
+
+    {exp:low_variables:parse var="address_field_name" [style="microformat|schema|rdfa|plain|inline"]}
+    
+For tag pairs:
+
+    {exp:low_variables:parse var="address_field_name" multiple="yes"}
+        {street} {!-- note lack of address_field_name: prefix! --}
+        {street_2}
+        {city}, {region}, {postal_code}
+        {country}
+    {/exp:low_variables:parse}
+
 Installation
 ------------
 
 Download and unzip the archive. Upload the `vz_address` folder to /system/expressionengine/third_party/.
+
+Thanks
+------
+
+Low Variables support was added by <a href="https://twitter.com/adrienneleigh">@adrienneleigh</a>.
