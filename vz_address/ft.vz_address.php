@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.1.0',
+        'version'   => '1.1.1',
     );
 	    
     var $has_array_data = TRUE;
@@ -163,6 +163,14 @@ class Vz_address_ft extends EE_Fieldtype {
 
 	
 	// --------------------------------------------------------------------
+
+    /**
+     * Unserialize the data
+     */
+    function pre_process($data)
+    {
+        return unserialize($data);
+    }
 
     /**
      * Display Tag
