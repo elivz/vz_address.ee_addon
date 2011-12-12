@@ -84,8 +84,20 @@ class Vz_address_ft extends EE_Fieldtype {
             'country' => 'US'
         );
         
+        
         // Set default values
-        $data = unserialize(htmlspecialchars_decode($data));
+        
+        // If errors occur on Publish, $data is going to be an array. 
+        // Allow for that case by serializing $data first if necessary.
+        if (is_array($data)) {
+            $datatemp = serialize($data);
+            }
+        else {
+            $datatemp = $data;
+            }
+            
+        $data = unserialize(htmlspecialchars_decode($datatemp));
+        
         if (!is_array($data)) $data = array();
         $data = array_merge($fields, $data);
         
