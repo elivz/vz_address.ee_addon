@@ -12,12 +12,23 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.1.1',
+        'version'   => '1.2.0',
     );
 	    
-    var $has_array_data = TRUE;
+    public $has_array_data = TRUE;
     
-    var $country_codes = array("AF","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BA","BW","BV","BR","IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC","CO","KM","CG","CD","CK","CR","CI","HR","CU","CY","CZ","DK","DJ","DM","DO","TP","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","FX","GF","PF","TF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GN","GW","GY","HT","HM","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IL","IT","JM","JP","JO","KZ","KE","KI","KP","KR","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MK","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","MS","MA","MZ","MM","NA","NR","NP","NL","AN","NC","NZ","NI","NE","NG","NU","NF","MP","NO","OM","PK","PW","PA","PG","PY","PE","PH","PN","PL","PT","PR","QA","RE","RO","RU","RW","KN","LC","VC","WS","SM","ST","SA","SN","SC","SL","SG","SK","SI","SB","SO","ZA","GS","ES","LK","SH","PM","SD","SR","SJ","SZ","SE","CH","SY","TW","TJ","TZ","TH","TG","TK","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UM","UY","UZ","VU","VE","VN","VG","VI","WF","EH","YE","YU","ZM","ZW");
+    protected $country_codes = array("AF","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BA","BW","BV","BR","IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC","CO","KM","CG","CD","CK","CR","CI","HR","CU","CY","CZ","DK","DJ","DM","DO","TP","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","FX","GF","PF","TF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GN","GW","GY","HT","HM","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IL","IT","JM","JP","JO","KZ","KE","KI","KP","KR","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MK","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","MS","MA","MZ","MM","NA","NR","NP","NL","AN","NC","NZ","NI","NE","NG","NU","NF","MP","NO","OM","PK","PW","PA","PG","PY","PE","PH","PN","PL","PT","PR","QA","RE","RO","RU","RW","KN","LC","VC","WS","SM","ST","SA","SN","SC","SL","SG","SK","SI","SB","SO","ZA","GS","ES","LK","SH","PM","SD","SR","SJ","SZ","SE","CH","SY","TW","TJ","TZ","TH","TG","TK","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UM","UY","UZ","VU","VE","VN","VG","VI","WF","EH","YE","YU","ZM","ZW");
+    
+    protected $fields = array(
+        'street' => '',
+        'street_2' => '',
+        'city' => '',
+        'region' => '',
+        'postal_code' => '',
+        'country' => 'US',
+        'lat' => '',
+        'long' => ''
+    );
   
 	/**
 	 * Fieldtype Constructor
@@ -75,14 +86,6 @@ class Vz_address_ft extends EE_Fieldtype {
         $this->_include_css();
 		
         $form = "";
-        $fields = array(
-            'street' => '',
-            'street_2' => '',
-            'city' => '',
-            'region' => '',
-            'postal_code' => '',
-            'country' => 'US'
-        );
         
         // Set default values
         if (!is_array($data)) {
@@ -91,9 +94,9 @@ class Vz_address_ft extends EE_Fieldtype {
             $data = $decoded ? $decoded : unserialize($data);
         }
         if (!is_array($data)) $data = array();
-        $data = array_merge($fields, $data);
+        $data = array_merge($this->fields, $data);
         
-        foreach(array_keys($fields) as $field)
+        foreach(array_keys($this->fields) as $field)
         {
             $form .= '<div class="vz_address vz_address_'.$field.($is_cell ? '_cell' : '_field').'">';
             $form .= form_label($this->EE->lang->line($field), $name.'_'.$field);
@@ -147,7 +150,14 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function save($data)
     {
-    	return json_encode($data);
+        if ($data == $this->fields)
+        {
+            return '';
+        }
+        else
+        {
+        	return json_encode($data);
+        }
     }
     
     /**
@@ -155,7 +165,7 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function save_cell($data)
     {
-        return json_encode($data);
+        return $this->save($data);
     }
 	
     /**
@@ -163,7 +173,7 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function save_var_field($data)
     {
-        return json_encode($data);
+        return $this->save($data);
     }
 
 	
