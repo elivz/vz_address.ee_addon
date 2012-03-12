@@ -85,7 +85,11 @@ class Vz_address_ft extends EE_Fieldtype {
         );
         
         // Set default values
-        if (!is_array($data)) $data = unserialize(htmlspecialchars_decode($data));
+        if (!is_array($data)) {
+            $data = htmlspecialchars_decode($data);
+            $decoded = (array) json_decode($data);
+            $data = $decoded ? $decoded : unserialize($data);
+        }
         if (!is_array($data)) $data = array();
         $data = array_merge($fields, $data);
         
@@ -137,12 +141,13 @@ class Vz_address_ft extends EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
     
+    
     /**
      * Save Field
      */
     function save($data)
     {
-    	return serialize($data);
+    	return json_encode($data);
     }
     
     /**
@@ -150,7 +155,7 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function save_cell($data)
     {
-        return serialize($data);
+        return json_encode($data);
     }
 	
     /**
@@ -158,18 +163,21 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function save_var_field($data)
     {
-        return serialize($data);
+        return json_encode($data);
     }
 
 	
 	// --------------------------------------------------------------------
+
 
     /**
      * Unserialize the data
      */
     function pre_process($data)
     {
-        return unserialize($data);
+        $data = htmlspecialchars_decode($data);
+        $decoded = (array) json_decode($data);
+        return $decoded ? $decoded : unserialize($data);
     }
 
     /**
@@ -254,7 +262,9 @@ class Vz_address_ft extends EE_Fieldtype {
 	 */
     function display_var_tag($var_data, $tagparams, $tagdata) 
     {
-        $data = unserialize(htmlspecialchars_decode($var_data));
+        $data = htmlspecialchars_decode($var_data);
+        $decoded = (array) json_decode($data);
+        $data = $decoded ? $decoded : unserialize($data);
         return $this->replace_tag($data, $tagparams, $tagdata);
     }
     
