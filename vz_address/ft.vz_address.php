@@ -57,7 +57,7 @@ class Vz_address_ft extends EE_Fieldtype {
         if ( !$this->cache['css'] )
         {
             $this->EE->cp->add_to_head('<style type="text/css">
-                .vz_address { padding-bottom: 0.5em; }
+                .vz_address { padding-bottom:0.5em; }
                 .vz_address label { display:block; }
                 .vz_address input { width:97%; padding:4px; }
                 .vz_address select { width:101%; }
@@ -66,16 +66,52 @@ class Vz_address_ft extends EE_Fieldtype {
                 .vz_address_region_field { float:left; width:24%; padding-left:1%; }
                 .vz_address_postal_code_field { float:right; width:24%; }
                 .vz_address_region_field input, .vz_address_postal_code_field input { width:94%; }
-                .vz_address_country_field { width: 48%; }
+                .vz_address_country_field { width:48%; }
                 .matrix .vz_address input { width:98.5%; }
                 .matrix .vz_address select { width:100%; }
                 .vz_address_region_cell { float:left; width:48%; }
                 .vz_address_postal_code_cell { float:right; width:48%; }
                 .matrix .vz_address_region_cell input, .matrix .vz_address_postal_code_cell input { width:97%; }
+                .vz_address_previous { margin-top:1em; padding:4px 5px; background:#E1E8ED; border:1px solid #D0D7DF; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; }
+                .vz_address_previous label { display:inline; margin-right:4px; font:italic 1.25em "Times New Roman",Times,serif; }
             </style>');
         	
         	$this->cache['css'] = TRUE;
         }
+    }
+
+
+	// --------------------------------------------------------------------
+	
+	
+	/**
+     * Individual field settings UI
+     */
+    function display_settings($settings)
+    {
+		$this->EE->load->library('table');
+		$this->EE->lang->loadfile('vz_address');
+		
+        $display_previous = isset($settings['display_previous']) && $settings['display_previous'] == 'y';
+		
+		$settings_ui = array(
+			lang('display_previous'),
+			form_radio('vz_address_display_previous', 'y', $display_previous, 'id="vz_address_display_previous_yes"') . ' ' .
+			form_label(lang('yes'), 'vz_address_display_previous_yes') .
+			'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+			form_radio('vz_address_display_previous', '', !$display_previous, 'id="vz_address_display_previous_no"') . ' ' .
+			form_label(lang('no'), 'vz_address_display_previous_no')
+		);
+		
+        $this->EE->table->add_row($settings_ui);
+    }
+	
+    /**
+     * Save Field Settings
+     */
+    function save_settings()
+    {
+        return array('display_previous' => $this->EE->input->post('vz_address_display_previous'));
     }
 
 
@@ -92,7 +128,7 @@ class Vz_address_ft extends EE_Fieldtype {
 		
         $this->_include_css();
 		
-        $form = "";
+        $form = '';
         
         // Set default values
         if (!is_array($data)) {
@@ -121,6 +157,42 @@ class Vz_address_ft extends EE_Fieldtype {
             $form .= '</div>';
         }
         
+        // Allow for picking from previous addresses
+        if (isset($this->settings['display_previous']) && $this->settings['display_previous'] == 'y')
+        {
+            // Get the previous values from the database
+            $field_name = 'field_id_'.$this->field_id;
+            $this->EE->db->select($field_name);
+            $this->EE->db->distinct();
+            $query = $this->EE->db->get('exp_channel_data')->result_array();
+            
+            // Condense the query into the data we need
+            $select_values = array('');
+            $json_values = array($this->fields);
+            foreach ($query as $row)
+            {
+                $row = array_shift($row);
+                $row = htmlspecialchars_decode($row);
+                $decoded = (array) json_decode($row);
+                $row = $decoded ? $decoded : unserialize($row);
+                if (is_array($row) && $row != $this->fields)
+                {
+                    $select_values[] = implode(', ', array_filter($row));
+                    $json_values[] = $row;
+                }
+            }
+            
+            // Create the markup
+            $form .= '<div class="vz_address_previous"><label for="'.$name.'_previous">'.$this->EE->lang->line('previous').':</label> ';
+            $form .= form_dropdown('', $select_values, NULL, 'id="'.$name.'_previous"');
+            $form .= '<script type="text/javascript">';
+            $form .= 'var vz_address_previous_values_'.$this->field_id.' = '.json_encode($json_values).';';
+            $form .= '$("#'.$name.'_previous").change(function(){ ';
+            $form .= '$.each(vz_address_previous_values_'.$this->field_id.'[$(this).val()], function(key, value) { ';
+            $form .= '$("[name=\''.$name.'["+key+"]\']").val(value); ';
+            $form .= '}); });</script></div>';
+        }
+            
         return $form;
     }
     

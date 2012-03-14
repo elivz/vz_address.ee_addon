@@ -8,6 +8,9 @@ $lang = array(
     'region' => 'State/Province',
     'postal_code' => 'Postal Code',
     'country' => 'Country',
+    
+    'display_previous' => 'Allow user to select from previously entered addresses?',
+    'previous' => 'Or select a previously used address',
 
     "AF" => "Afghanistan",
     "AL" => "Albania",
