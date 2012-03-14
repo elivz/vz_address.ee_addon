@@ -25,9 +25,7 @@ class Vz_address_ft extends EE_Fieldtype {
         'city' => '',
         'region' => '',
         'postal_code' => '',
-        'country' => 'US',
-        'lat' => '',
-        'long' => ''
+        'country' => 'US'
     );
   
 	/**
@@ -61,10 +59,19 @@ class Vz_address_ft extends EE_Fieldtype {
             $this->EE->cp->add_to_head('<style type="text/css">
                 .vz_address { padding-bottom: 0.5em; }
                 .vz_address label { display:block; }
-                .vz_address input { width:99%; padding:4px; }
-                .vz_address_street_field, .vz_address_street_2_field, .vz_address_city_field { float:left; width:48%; padding-right:2%; }
-                .vz_address_region_field, .vz_address_postal_code_field { float:left; width:23%; padding-right:2%; }
-                .vz_address_region_cell, .vz_address_postal_code_cell { float:left; width:48%; padding-right:2%; }
+                .vz_address input { width:97%; padding:4px; }
+                .vz_address select { width:101%; }
+                .vz_address_street_field, .vz_address_city_field { float:left; width:49%; padding-right:1%; }
+                .vz_address_street_2_field { float:right; width:49%; padding-left:1%; }
+                .vz_address_region_field { float:left; width:24%; padding-left:1%; }
+                .vz_address_postal_code_field { float:right; width:24%; }
+                .vz_address_region_field input, .vz_address_postal_code_field input { width:94%; }
+                .vz_address_country_field { width: 48%; }
+                .matrix .vz_address input { width:98.5%; }
+                .matrix .vz_address select { width:100%; }
+                .vz_address_region_cell { float:left; width:48%; }
+                .vz_address_postal_code_cell { float:right; width:48%; }
+                .matrix .vz_address_region_cell input, .matrix .vz_address_postal_code_cell input { width:97%; }
             </style>');
         	
         	$this->cache['css'] = TRUE;
