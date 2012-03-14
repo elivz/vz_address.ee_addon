@@ -163,34 +163,38 @@ class Vz_address_ft extends EE_Fieldtype {
             // Get the previous values from the database
             $field_name = 'field_id_'.$this->field_id;
             $this->EE->db->select($field_name);
+            $this->EE->db->where($field_name." <> ''");
             $this->EE->db->distinct();
             $query = $this->EE->db->get('exp_channel_data')->result_array();
-            
-            // Condense the query into the data we need
-            $select_values = array('');
-            $json_values = array($this->fields);
-            foreach ($query as $row)
+
+            if (count($query))
             {
-                $row = array_shift($row);
-                $row = htmlspecialchars_decode($row);
-                $decoded = (array) json_decode($row);
-                $row = $decoded ? $decoded : unserialize($row);
-                if (is_array($row) && $row != $this->fields)
+                // Condense the query into the data we need
+                $select_values = array('');
+                $json_values = array($this->fields);
+                foreach ($query as $row)
                 {
-                    $select_values[] = implode(', ', array_filter($row));
-                    $json_values[] = $row;
+                    $row = array_shift($row);
+                    $row = htmlspecialchars_decode($row);
+                    $decoded = (array) json_decode($row);
+                    $row = $decoded ? $decoded : unserialize($row);
+                    if (is_array($row) && $row != $this->fields)
+                    {
+                        $select_values[] = implode(', ', array_filter($row));
+                        $json_values[] = $row;
+                    }
                 }
+                
+                // Create the markup
+                $form .= '<div class="vz_address_previous"><label for="'.$name.'_previous">'.$this->EE->lang->line('previous').':</label> ';
+                $form .= form_dropdown('', $select_values, NULL, 'id="'.$name.'_previous"');
+                $form .= '<script type="text/javascript">';
+                $form .= 'var vz_address_previous_values_'.$this->field_id.' = '.json_encode($json_values).';';
+                $form .= '$("#'.$name.'_previous").change(function(){ ';
+                $form .= '$.each(vz_address_previous_values_'.$this->field_id.'[$(this).val()], function(key, value) { ';
+                $form .= '$("[name=\''.$name.'["+key+"]\']").val(value); ';
+                $form .= '}); });</script></div>';
             }
-            
-            // Create the markup
-            $form .= '<div class="vz_address_previous"><label for="'.$name.'_previous">'.$this->EE->lang->line('previous').':</label> ';
-            $form .= form_dropdown('', $select_values, NULL, 'id="'.$name.'_previous"');
-            $form .= '<script type="text/javascript">';
-            $form .= 'var vz_address_previous_values_'.$this->field_id.' = '.json_encode($json_values).';';
-            $form .= '$("#'.$name.'_previous").change(function(){ ';
-            $form .= '$.each(vz_address_previous_values_'.$this->field_id.'[$(this).val()], function(key, value) { ';
-            $form .= '$("[name=\''.$name.'["+key+"]\']").val(value); ';
-            $form .= '}); });</script></div>';
         }
             
         return $form;
