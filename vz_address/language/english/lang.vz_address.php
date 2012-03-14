@@ -8,6 +8,9 @@ $lang = array(
     'region' => 'State/Province',
     'postal_code' => 'Postal Code',
     'country' => 'Country',
+    'lat' => 'Latitude',
+    'long' => 'Longitude',
+    'missing' => 'Fetch missing information',
 
     "AF" => "Afghanistan",
     "AL" => "Albania",

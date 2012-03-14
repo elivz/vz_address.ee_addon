@@ -54,18 +54,58 @@ class Vz_address_ft extends EE_Fieldtype {
 	/**
 	 * Include the CSS styles, but only once
 	 */
-	private function _include_css()
+	private function _include_css_js()
 	{
         if ( !$this->cache['css'] )
         {
             $this->EE->cp->add_to_head('<style type="text/css">
-                .vz_address { padding-bottom: 0.5em; }
-                .vz_address label { display:block; }
-                .vz_address input { width:99%; padding:4px; }
-                .vz_address_street_field, .vz_address_street_2_field, .vz_address_city_field { float:left; width:48%; padding-right:2%; }
-                .vz_address_region_field, .vz_address_postal_code_field { float:left; width:23%; padding-right:2%; }
-                .vz_address_region_cell, .vz_address_postal_code_cell { float:left; width:48%; padding-right:2%; }
-            </style>');
+    .vz_address { padding-bottom: 0.5em; }
+    .vz_address label { display:block; }
+    .vz_address input, .vz_address select { width:99%; padding:4px; }
+    .vz_address_street_field, .vz_address_street_2_field, .vz_address_city_field { float:left; width:48%; padding-right:2%; }
+    .vz_address_region_field, .vz_address_postal_code_field { float:left; width:23%; padding-right:2%; }
+    .vz_address_country_field, .vz_address_lat_field, .vz_address_long_field { float:left; width:31.3333%; padding-right:2%; }
+    .vz_address_region_cell, .vz_address_postal_code_cell, .vz_address_lat_cell, .vz_address_long_cell { float:left; width:48%; padding-right:2%; }
+    .vz_address_country_cell { width:98%; padding-right:2%; }
+</style>
+<script type="text/javascript">
+    var endpoint = "http://open.mapquestapi.com/nominatim/v1/search?format=json&limit=1&addressdetails=1&q=";
+    $(".publish_vz_address").live("focusout", function() {
+        var $fields = $(this).find("input,select"),
+            query = $fields.map(function() {
+                var val = $(this).val();
+                if (val) return encodeURI(val);
+            }).get().join(",+");
+        $.getJSON(endpoint+query, function(data) {
+            data = data[0];
+            if (data == []) return;
+            $fields.each(function() {
+                var $this = $(this),
+                    name = $this.attr("class").replace("vz_address_", "");
+                if ($this.val() == "") {
+                    switch (name) {
+                        case "city" :
+                            $this.val(data.address.city);
+                            break;
+                        case "region" :
+                            $this.val(data.address.state || data.address.province);
+                            break;
+                        case "postal_code" :
+                            $this.val(data.address.postcode);
+                            break;
+                        case "lat" :
+                            $this.val(data.lat);
+                            break;
+                        case "long" :
+                            $this.val(data.lon);
+                            break;
+                    }
+                }
+            });
+        });
+        return false;
+    });
+</script>');
         	
         	$this->cache['css'] = TRUE;
         }
@@ -83,7 +123,7 @@ class Vz_address_ft extends EE_Fieldtype {
 		$this->EE->load->helper('form');
 		$this->EE->lang->loadfile('vz_address');
 		
-        $this->_include_css();
+        $this->_include_css_js();
 		
         $form = "";
         
@@ -104,7 +144,7 @@ class Vz_address_ft extends EE_Fieldtype {
             if ($field == 'country')
             {
                 // Output a select box for the country
-                $form .= form_dropdown($name.'['.$field.']', $this->cache['countries'], $data[$field], 'id="'.$name.'_'.$field.'"');
+                $form .= form_dropdown($name.'['.$field.']', $this->cache['countries'], $data[$field], 'id="'.$name.'_'.$field.'" class="vz_address_'.$field.'"');
             }
             else
             {
@@ -113,6 +153,8 @@ class Vz_address_ft extends EE_Fieldtype {
             }
             $form .= '</div>';
         }
+        
+        $form .= '<a href="#" class="vz_address_get_missing">' . $this->EE->lang->line('missing') . '</a>';
         
         return $form;
     }
