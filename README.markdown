@@ -1,7 +1,7 @@
 VZ Address
 ==========
 
-An address fieldtype for Expression Engine 2.
+An address fieldtype for Expression Engine 2. Also works as a Matrix cell-type or a Low Variable.
 
 Template Tags
 -------------
@@ -57,4 +57,4 @@ Download and unzip the archive. Upload the `vz_address` folder to /system/expres
 Thanks
 ------
 
-Low Variables support was added by <a href="https://twitter.com/adrienneleigh">@adrienneleigh</a>.
+Initial Low Variables support was added by <a href="https://twitter.com/adrienneleigh">@adrienneleigh</a>.
