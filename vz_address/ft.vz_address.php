@@ -20,6 +20,7 @@ class Vz_address_ft extends EE_Fieldtype {
     protected $country_codes = array("AF","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BA","BW","BV","BR","IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC","CO","KM","CG","CD","CK","CR","CI","HR","CU","CY","CZ","DK","DJ","DM","DO","TP","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","FX","GF","PF","TF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GN","GW","GY","HT","HM","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IL","IT","JM","JP","JO","KZ","KE","KI","KP","KR","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MK","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","MS","MA","MZ","MM","NA","NR","NP","NL","AN","NC","NZ","NI","NE","NG","NU","NF","MP","NO","OM","PK","PW","PA","PG","PY","PE","PH","PN","PL","PT","PR","QA","RE","RO","RU","RW","KN","LC","VC","WS","SM","ST","SA","SN","SC","SL","SG","SK","SI","SB","SO","ZA","GS","ES","LK","SH","PM","SD","SR","SJ","SZ","SE","CH","SY","TW","TJ","TZ","TH","TG","TK","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UM","UY","UZ","VU","VE","VN","VG","VI","WF","EH","YE","YU","ZM","ZW");
     
     protected $fields = array(
+        'name' => '',
         'street' => '',
         'street_2' => '',
         'city' => '',
@@ -61,6 +62,7 @@ class Vz_address_ft extends EE_Fieldtype {
                 .vz_address label { display:block; }
                 .vz_address input { width:97%; padding:4px; }
                 .vz_address select { width:101%; }
+                .vz_address_name_field input { width:98.5%; }
                 .vz_address_street_field, .vz_address_city_field { float:left; width:49%; padding-right:1%; }
                 .vz_address_street_2_field { float:right; width:49%; padding-left:1%; }
                 .vz_address_region_field { float:left; width:24%; padding-left:1%; }
@@ -85,25 +87,32 @@ class Vz_address_ft extends EE_Fieldtype {
 	
 	
 	/**
-     * Individual field settings UI
+     * Field settings UI
      */
     function display_settings($settings)
     {
 		$this->EE->load->library('table');
 		$this->EE->lang->loadfile('vz_address');
 		
-        $display_previous = isset($settings['display_previous']) && $settings['display_previous'] == 'y';
+        $display_name = !empty($settings['display_name']);
+		$this->EE->table->add_row(array(
+			lang('display_name'),
+			form_radio('vz_address_display_name', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
+			form_label(lang('yes'), 'vz_address_display_previous_yes') .
+			'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+			form_radio('vz_address_display_name', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
+			form_label(lang('no'), 'vz_address_display_name_no')
+		));
 		
-		$settings_ui = array(
+        $display_previous = !empty($settings['display_previous']);
+		$this->EE->table->add_row(array(
 			lang('display_previous'),
 			form_radio('vz_address_display_previous', 'y', $display_previous, 'id="vz_address_display_previous_yes"') . ' ' .
 			form_label(lang('yes'), 'vz_address_display_previous_yes') .
 			'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
 			form_radio('vz_address_display_previous', '', !$display_previous, 'id="vz_address_display_previous_no"') . ' ' .
 			form_label(lang('no'), 'vz_address_display_previous_no')
-		);
-		
-        $this->EE->table->add_row($settings_ui);
+		));
     }
 	
     /**
@@ -111,7 +120,38 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function save_settings()
     {
-        return array('display_previous' => $this->EE->input->post('vz_address_display_previous'));
+        return array(
+            'display_name' => $this->EE->input->post('vz_address_display_name'),
+            'display_previous' => $this->EE->input->post('vz_address_display_previous')
+        );
+    }
+	
+	/**
+     * Cell settings UI
+     */
+    function display_cell_settings($settings)
+    {
+		$this->EE->lang->loadfile('vz_address');
+		
+        return array(
+            array(lang('display_name'), form_checkbox('display_name', 'y', (!empty($settings['display_name']))))
+        );
+    }
+    
+    /**
+     * Low Variables settings UI
+     */
+    function display_var_settings($settings)
+    {
+        $display_name = !empty($settings['display_name']);
+		return array(array(
+			lang('display_name'),
+			form_radio('variable_settings[vz_address][display_name]', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
+			form_label(lang('yes'), 'vz_address_display_previous_yes') .
+			'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+			form_radio('variable_settings[vz_address][display_name]', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
+			form_label(lang('no'), 'vz_address_display_name_no')
+		));
     }
 
 
@@ -141,6 +181,9 @@ class Vz_address_ft extends EE_Fieldtype {
         
         foreach(array_keys($this->fields) as $field)
         {
+            // Should we display the Name field?
+            if ($field == 'name' && empty($this->settings['display_name'])) continue;
+            
             $form .= '<div class="vz_address vz_address_'.$field.($is_cell ? '_cell' : '_field').'">';
             $form .= form_label($this->EE->lang->line($field), $name.'_'.$field);
             
@@ -158,7 +201,7 @@ class Vz_address_ft extends EE_Fieldtype {
         }
         
         // Allow for picking from previous addresses
-        if (isset($this->settings['display_previous']) && $this->settings['display_previous'] == 'y')
+        if (!empty($this->settings['display_previous']))
         {
             // Get the previous values from the database
             $field_name = 'field_id_'.$this->field_id;

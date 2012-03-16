@@ -2,6 +2,7 @@
 
 $lang = array(
 
+    'name' => 'Name',
     'street' => 'Street Address',
     'street_2' => 'Street Address 2',
     'city' => 'City',
@@ -9,8 +10,10 @@ $lang = array(
     'postal_code' => 'Postal Code',
     'country' => 'Country',
     
+    'display_name' => 'Display the "Name" field?',
     'display_previous' => 'Allow user to select from previously entered addresses?',
-    'previous' => 'Or select a previously used address',
+    
+    'previous' => 'Or select from previously used addresses',
 
     "AF" => "Afghanistan",
     "AL" => "Albania",
