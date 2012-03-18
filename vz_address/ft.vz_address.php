@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.2.0',
+        'version'   => '1.2.1',
     );
 	    
     public $has_array_data = TRUE;
@@ -329,10 +329,11 @@ class Vz_address_ft extends EE_Fieldtype {
             switch ($style)
             {
                 case 'inline' :
-                    $output = ($address['name'] ? $address['name'].', ' : '')."{$address['street']}, ".($address['street_2'] ? $address['street_2'].', ' : '')."{$address['city']}, {$address['region']} {$address['postal_code']}, {$this->EE->lang->line($address['country'])}";
+                    $output = (!empty($address['name']) ? $address['name'].', ' : '')."{$address['street']}, ".($address['street_2'] ? $address['street_2'].', ' : '')."{$address['city']}, {$address['region']} {$address['postal_code']}, {$this->EE->lang->line($address['country'])}";
                     break;
                 case 'plain' :
                     $output = "
+                        " . (!empty($address['name']) ? "{$address['name']}" : '') . "
                         {$address['street']}
                         {$address['street_2']}
                         {$address['city']}, {$address['region']} {$address['postal_code']}
@@ -341,7 +342,7 @@ class Vz_address_ft extends EE_Fieldtype {
                 case 'rdfa' :
                     $output = "
                         <div xmlns:v='http://rdf.data-vocabulary.org/#' typeof='v:Address' class='adr' {$wrapper_attr}>
-                            " . ($address['name'] ? "<div property='v:name'>{$address['name']}</div>" : '') . "
+                            " . (!empty($address['name']) ? "<div property='v:name'>{$address['name']}</div>" : '') . "
                             <div property='v:street-address'>
                                 <div property='v:street-address'>{$address['street']}</div>
                                 <div property='v:extended-address'>{$address['street_2']}</div>
@@ -357,7 +358,7 @@ class Vz_address_ft extends EE_Fieldtype {
                 case 'schema' :
                     $output = "
                         <div itemprop='address' itemscope itemtype='http://schema.org/PostalAddress' class='adr' {$wrapper_attr}>
-                            " . ($address['name'] ? "<div itemprop='name'>{$address['name']}</div>" : '') . "
+                            " . (!empty($address['name']) ? "<div itemprop='name'>{$address['name']}</div>" : '') . "
                             <div itemprop='streetAddress'>
                                 <div itemprop='street-address'>{$address['street']}</div>
                                 <div itemprop='extended-address'>{$address['street_2']}</div>
@@ -372,7 +373,7 @@ class Vz_address_ft extends EE_Fieldtype {
                     break;
                 case 'microformat' : default :
                     $output = '';
-                    if ($address['name']) $output .= "
+                    if (!empty($address['name'])) $output .= "
                         <div class='vcard'><div class='fn'>{$address['name']}</div>";
                     $output .= "
                         <div class='adr' {$wrapper_attr}>
@@ -385,7 +386,7 @@ class Vz_address_ft extends EE_Fieldtype {
                             </div>
                             <div class='country'>{$this->EE->lang->line($address['country'])}</div>
                         </div>";
-                    if ($address['name']) $output .= "</div>";
+                    if (!empty($address['name'])) $output .= "</div>";
             }
     	}
     	else // Tag pair
@@ -415,7 +416,7 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function replace_name($address, $params=array(), $tagdata=FALSE)
     {
-        return $address['name'];
+        return !empty($address['name']) ? $address['name'] : '';
     }
     function replace_street($address, $params=array(), $tagdata=FALSE)
     {
