@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.2.1',
+        'version'   => '1.3.0',
     );
 	    
     public $has_array_data = TRUE;
@@ -399,17 +399,6 @@ class Vz_address_ft extends EE_Fieldtype {
             
         return $output;
     }
-	
-	/**
-     * Display Low Variables tag
-	 */
-    function display_var_tag($var_data, $tagparams, $tagdata) 
-    {
-        $data = htmlspecialchars_decode($var_data);
-        $decoded = (array) json_decode($data);
-        $data = $decoded ? $decoded : unserialize($data);
-        return $this->replace_tag($data, $tagparams, $tagdata);
-    }
     
     /*
      * Individual address pieces
@@ -448,6 +437,60 @@ class Vz_address_ft extends EE_Fieldtype {
         {
             return $this->EE->lang->line($address['country']);
         }
+    }
+    
+    /*
+     * Check if the address is empty
+     */
+    function replace_is_empty($address, $params=array(), $tagdata=FALSE)
+    {
+		$address = array_merge($this->fields, $address);
+        return $address == $this->fields ? 'y' : '';
+    }
+    
+    function replace_is_not_empty($address, $params=array(), $tagdata=FALSE)
+    {
+		$address = array_merge($this->fields, $address);
+        return $address == $this->fields ? '' : 'y';
+    }
+    
+    /*
+     * Output a URL to the address in one of several mapping websites
+     */
+    function replace_map_url($address, $params=array(), $tagdata=FALSE)
+    {
+        $source = isset($params['source']) ? strtolower($params['source']) : 'google';
+        $params = isset($params['params']) ? '&' . strtolower($params['params']) : '';
+        
+        // Create the url-encoded address
+        if (isset($address['name'])) unset($address['name']);
+        $query = urlencode(implode(', ', array_filter($address)));
+        
+        switch ($source)
+        {
+            case 'yahoo':
+                $output = "http://maps.yahoo.com/#q={$query}{$params}";
+            case 'bing':
+                $output = "http://www.bing.com/maps/?v=2&where1={$query}{$params}";
+            case 'mapquest':
+                $output = "http://mapq.st/map?q={$query}{$params}";
+            case 'google': default:
+                $output = "http://maps.google.com/maps?q={$query}{$params}";
+                break;
+        }
+        
+        return $output;
+    }
+	
+	/**
+     * Display Low Variables tag
+	 */
+    function display_var_tag($var_data, $tagparams, $tagdata) 
+    {
+        $data = htmlspecialchars_decode($var_data);
+        $decoded = (array) json_decode($data);
+        $data = $decoded ? $decoded : unserialize($data);
+        return $this->replace_tag($data, $tagparams, $tagdata);
     }
 }
 

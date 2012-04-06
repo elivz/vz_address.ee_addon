@@ -20,6 +20,10 @@ Will output the complete address, in a standard format. Use the `style=""` attri
     {address_field:country [code="yes"]}
 
 Output particular pieces of the address. If you use the parameter `code="yes"` on the country tag, you will get the the international country code rather than the full name.
+    
+    {address_field:map_url [source="google|yahoo|bing|mapquest"] [params=""]}
+
+Output a URL to the address on any one of a variety of mapping services. Specify which service you want to use with the `source` parameter (Google Maps is the default). Anything you put in the `params` parameter will be added to the end of the map URL, use it to specify zoom levels, map types, etc.
 
 ### Tag Pair ###
 
