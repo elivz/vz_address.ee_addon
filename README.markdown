@@ -24,6 +24,17 @@ Output particular pieces of the address. If you use the parameter `code="yes"` o
     {address_field:map_url [source="google|yahoo|bing|mapquest"] [params=""]}
 
 Output a URL to the address on any one of a variety of mapping services. Specify which service you want to use with the `source` parameter (Google Maps is the default). Anything you put in the `params` parameter will be added to the end of the map URL, use it to specify zoom levels, map types, etc.
+    
+    {address_field:static_map}
+
+Returns the URL to an static map image of the address. Currently, Google Maps' API is used, although I plan to add additional services in the future. There are a number of parameters you can use to modify the map display:
+
+* `width` and `height` - The size in pixels of the image that is generated. (default: 400 x 200)
+* `zoom` - Zoom level of the map. (default: 14)
+* `type` - One of: roadmap, satellite, hybrid, or terrain. (default: roadmap)
+* `marker:size` - The relative size of the pushpin that marks the address location. One of: normal, mid, small, or tiny. (default: normal)
+* `marker:color` - The color of the pushpin. Either a named color (black, brown, green, purple, yellow, blue, gray, orange, red, or white) or a 6-digit hex-code, like "#ff0000". Three-digit color codes are not supported. (default: red)
+* `marker:label` - Instead of the normal dot, you can specify a single letter or number to appear on the pushpin. (default: none)
 
 ### Tag Pair ###
 

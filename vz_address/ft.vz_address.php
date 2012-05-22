@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.3.0',
+        'version'   => '1.3.1',
     );
 	    
     public $has_array_data = TRUE;
@@ -476,6 +476,49 @@ class Vz_address_ft extends EE_Fieldtype {
                 $output = "http://mapq.st/map?q={$query}{$params}";
             case 'google': default:
                 $output = "http://maps.google.com/maps?q={$query}{$params}";
+                break;
+        }
+        
+        return $output;
+    }
+    
+    /*
+     * Output a static map image
+     */
+    function replace_static_map($address, $params=array(), $tagdata=FALSE)
+    {
+        $source = isset($params['source']) ? strtolower($params['source']) : 'google';
+        $width = isset($params['width']) ? strtolower($params['width']) : '400';
+        $height = isset($params['height']) ? strtolower($params['height']) : '200';
+        $zoom = isset($params['zoom']) ? strtolower($params['zoom']) : '14';
+        $type = isset($params['type']) ? strtolower($params['type']) : 'roadmap';
+        $size = isset($params['marker:size']) ? strtolower($params['marker:size']) : FALSE;
+        $label = isset($params['marker:label']) ? strtoupper($params['marker:label']) : FALSE;
+        $color = isset($params['marker:color']) ? strtolower($params['marker:color']) : FALSE;
+        
+        // Normalize the color parameter
+        $color = str_replace('#', '0x', $color);
+        
+        // Create the url-encoded address
+        if (isset($address['name'])) unset($address['name']);
+        $address_string = urlencode(implode(', ', array_filter($address)));
+        
+        $output = isset($params['secure']) && $params['secure'] == 'yes' ? 'https' : 'http';
+        $marker = '';
+        switch ($source)
+        {
+            case 'yahoo':
+                // TODO
+            case 'bing':
+                // TODO
+            case 'mapquest':
+                // TODO
+            case 'google': default:
+                $marker .= $size ? 'size:'.$size.'|' : '';
+                $marker .= $color ? 'color:'.$color.'|' : '';
+                $marker .= $label ? 'label:'.$label.'|' : '';
+                var_dump($marker);
+                $output .= "://maps.googleapis.com/maps/api/staticmap?zoom={$zoom}&size={$width}x{$height}&maptype={$type}&markers={$marker}{$address_string}{$params}&sensor=false";
                 break;
         }
         
