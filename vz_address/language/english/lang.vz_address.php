@@ -3,7 +3,7 @@
 $lang = array(
 
     'name' => 'Name',
-    'street' => 'Street Address',
+    'street' => 'Address Line 1',
     'street_2' => 'Address Line 2',
     'city' => 'City',
     'region' => 'State/Province',
