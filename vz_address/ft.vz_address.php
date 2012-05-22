@@ -518,7 +518,7 @@ class Vz_address_ft extends EE_Fieldtype {
                 $marker .= $color ? 'color:'.$color.'|' : '';
                 $marker .= $label ? 'label:'.$label.'|' : '';
                 var_dump($marker);
-                $output .= "://maps.googleapis.com/maps/api/staticmap?zoom={$zoom}&size={$width}x{$height}&maptype={$type}&markers={$marker}{$address_string}{$params}&sensor=false";
+                $output .= "://maps.googleapis.com/maps/api/staticmap?zoom={$zoom}&size={$width}x{$height}&maptype={$type}&markers={$marker}{$address_string}&sensor=false";
                 break;
         }
         
