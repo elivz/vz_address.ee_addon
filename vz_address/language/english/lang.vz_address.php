@@ -9,6 +9,8 @@ $lang = array(
     'region' => 'State/Province',
     'postal_code' => 'Postal Code',
     'country' => 'Country',
+	'lat' => 'Latitude',
+	'lng' => 'Longitude',
     
     'display_name' => 'Display the "Name" field?',
     'display_previous' => 'Allow user to select from previously entered addresses?',

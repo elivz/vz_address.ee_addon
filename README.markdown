@@ -43,6 +43,8 @@ Returns the URL to an static map image of the address. Currently, Google Maps' A
         {street_2}
         {city}, {region} {postal_code}
         {country}
+		{lat}
+		{lng}
     {/address_field}
 
 If you need more control over the output, use the tag pair to output each part of the address individually.
