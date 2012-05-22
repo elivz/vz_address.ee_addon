@@ -4,7 +4,7 @@ $lang = array(
 
     'name' => 'Name',
     'street' => 'Street Address',
-    'street_2' => 'Street Address 2',
+    'street_2' => 'Address Line 2',
     'city' => 'City',
     'region' => 'State/Province',
     'postal_code' => 'Postal Code',
