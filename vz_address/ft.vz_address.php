@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.3.1',
+        'version'   => '1.3.2',
     );
 	    
     public $has_array_data = TRUE;
@@ -463,7 +463,7 @@ class Vz_address_ft extends EE_Fieldtype {
         $params = isset($params['params']) ? '&' . strtolower($params['params']) : '';
         
         // Create the url-encoded address
-        if (isset($address['name'])) unset($address['name']);
+        //if (isset($address['name'])) unset($address['name']);
         $query = urlencode(implode(', ', array_filter($address)));
         
         switch ($source)
