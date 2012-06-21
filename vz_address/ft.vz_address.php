@@ -26,7 +26,9 @@ class Vz_address_ft extends EE_Fieldtype {
         'city' => '',
         'region' => '',
         'postal_code' => '',
-        'country' => 'US'
+        'country' => 'US',
+		'lat' => '',
+		'lng' => ''
     );
   
 	/**
@@ -63,12 +65,11 @@ class Vz_address_ft extends EE_Fieldtype {
                 .vz_address input { width:97%; padding:4px; }
                 .vz_address select { width:101%; }
                 .vz_address_name_field input { width:98.5%; }
-                .vz_address_street_field, .vz_address_city_field { float:left; width:49%; padding-right:1%; }
+                .vz_address_street_field, .vz_address_city_field, .vz_address_country_field { float:left; width:49%; padding-right:1%; }
                 .vz_address_street_2_field { float:right; width:49%; padding-left:1%; }
-                .vz_address_region_field { float:left; width:24%; padding-left:1%; }
-                .vz_address_postal_code_field { float:right; width:24%; }
-                .vz_address_region_field input, .vz_address_postal_code_field input { width:94%; }
-                .vz_address_country_field { width:48%; }
+                .vz_address_region_field, .vz_address_lat_field { float:left; width:24%; padding-left:1%; }
+                .vz_address_postal_code_field, .vz_address_lng_field { float:right; width:24%; }
+                .vz_address_region_field input, .vz_address_postal_code_field input, .vz_address_lat_field input, .vz_address_lng_field input { width:94%; }
                 .matrix .vz_address input { width:98.5%; }
                 .matrix .vz_address select { width:100%; }
                 .vz_address_region_cell { float:left; width:48%; }
@@ -282,6 +283,35 @@ class Vz_address_ft extends EE_Fieldtype {
         }
         else
         {
+			//If the lat and lng fields weren't manually filled out
+			if($data['lat'] == '' && $data['lng'] == '')
+			{
+				$this->EE->load->library('curl');
+				
+				$address = urlencode($data['street'] . ' '
+									. $data['street_2'] . ' '
+									. $data['city'] . ' '
+									. $data['region'] . ' '
+									. $data['postal_code'] . ' '
+									. $data['country']
+									);
+				
+				$request = $this->EE->curl->simple_get('http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' . $address);
+				
+				$request = json_decode($request);
+
+				if(!empty($request->results))
+				{		
+					$geometry = $request->results[0]->geometry->location;
+
+					if($geometry)
+					{
+						$data['lat'] = $geometry->lat;
+						$data['lng'] = $geometry->lng;
+					}
+				}
+			}
+			
         	return json_encode($data);
         }
     }
