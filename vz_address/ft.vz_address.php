@@ -62,6 +62,7 @@ class Vz_address_ft extends EE_Fieldtype {
     .vz_address { padding-bottom: 0.5em; }
     .vz_address label { display:block; }
     .vz_address input, .vz_address select { width:99%; padding:4px; }
+    .vz_address select { height:25px; font:normal 110% Arial, "Helvetica Neue", Helvetica, sans-serif; color:#5F6C74; border:1px solid #8195A0; -webkit-appearance:menulist-button; }
     .vz_address_street_field, .vz_address_street_2_field, .vz_address_city_field { float:left; width:48%; padding-right:2%; }
     .vz_address_region_field, .vz_address_postal_code_field { float:left; width:23%; padding-right:2%; }
     .vz_address_country_field, .vz_address_lat_field, .vz_address_long_field { float:left; width:31.3333%; padding-right:2%; }
@@ -69,23 +70,26 @@ class Vz_address_ft extends EE_Fieldtype {
     .vz_address_country_cell { width:98%; padding-right:2%; }
 </style>
 <script type="text/javascript">
-    var endpoint = "http://open.mapquestapi.com/nominatim/v1/search?format=json&limit=1&addressdetails=1&q=";
-    $(".publish_vz_address").live("focusout", function() {
-        var $fields = $(this).find("input,select"),
-            query = $fields.map(function() {
+    var endpoint = "http://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q=";
+    $(".vz_address_get_missing").live("click", function(e) {
+        e.preventDefault();
+        $this = $(this);
+        $this.prepend(\'<img src="'.PATH_CP_GBL_IMG.'loader.gif" /> \');
+        var $fields = $this.parent().find("input,select"),
+            query = $fields.not(".vz_address_lat,.vz_address_long").map(function() {
                 var val = $(this).val();
                 if (val) return encodeURI(val);
-            }).get().join(",+");
+            }).get().join(",%20");
         $.getJSON(endpoint+query, function(data) {
             data = data[0];
             if (data == []) return;
             $fields.each(function() {
                 var $this = $(this),
                     name = $this.attr("class").replace("vz_address_", "");
-                if ($this.val() == "") {
+                if (name === "lat" || name === "long" || $this.val() == "") {
                     switch (name) {
                         case "city" :
-                            $this.val(data.address.city);
+                            $this.val(data.address.city || data.address.town);
                             break;
                         case "region" :
                             $this.val(data.address.state || data.address.province);
@@ -102,6 +106,7 @@ class Vz_address_ft extends EE_Fieldtype {
                     }
                 }
             });
+            $this.find("img").remove();
         });
         return false;
     });
