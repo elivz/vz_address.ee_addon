@@ -27,7 +27,7 @@ class Vz_address_ft extends EE_Fieldtype {
         'postal_code' => '',
         'country' => 'US',
         'lat' => '',
-        'long' => ''
+        'lng' => ''
     );
   
 	/**
@@ -65,8 +65,8 @@ class Vz_address_ft extends EE_Fieldtype {
     .vz_address select { height:25px; font:normal 110% Arial, "Helvetica Neue", Helvetica, sans-serif; color:#5F6C74; border:1px solid #8195A0; -webkit-appearance:menulist-button; }
     .vz_address_street_field, .vz_address_street_2_field, .vz_address_city_field { float:left; width:48%; padding-right:2%; }
     .vz_address_region_field, .vz_address_postal_code_field { float:left; width:23%; padding-right:2%; }
-    .vz_address_country_field, .vz_address_lat_field, .vz_address_long_field { float:left; width:31.3333%; padding-right:2%; }
-    .vz_address_region_cell, .vz_address_postal_code_cell, .vz_address_lat_cell, .vz_address_long_cell { float:left; width:48%; padding-right:2%; }
+    .vz_address_country_field, .vz_address_lat_field, .vz_address_lng_field { float:left; width:31.3333%; padding-right:2%; }
+    .vz_address_region_cell, .vz_address_postal_code_cell, .vz_address_lat_cell, .vz_address_lng_cell { float:left; width:48%; padding-right:2%; }
     .vz_address_country_cell { width:98%; padding-right:2%; }
 </style>
 <script type="text/javascript">
@@ -76,17 +76,17 @@ class Vz_address_ft extends EE_Fieldtype {
         $this = $(this);
         $this.prepend(\'<img src="'.PATH_CP_GBL_IMG.'loader.gif" /> \');
         var $fields = $this.parent().find("input,select"),
-            query = $fields.not(".vz_address_lat,.vz_address_long").map(function() {
+            query = $fields.not(".vz_address_lat,.vz_address_lng").map(function() {
                 var val = $(this).val();
                 if (val) return encodeURI(val);
             }).get().join(",%20");
         $.getJSON(endpoint+query, function(data) {
+            if (data === [] || typeof(data[0]) == "undefined") return;
             data = data[0];
-            if (data == []) return;
             $fields.each(function() {
                 var $this = $(this),
                     name = $this.attr("class").replace("vz_address_", "");
-                if (name === "lat" || name === "long" || $this.val() == "") {
+                if (name === "lat" || name === "lng" || $this.val() == "") {
                     switch (name) {
                         case "city" :
                             $this.val(data.address.city || data.address.town);
@@ -100,7 +100,7 @@ class Vz_address_ft extends EE_Fieldtype {
                         case "lat" :
                             $this.val(data.lat);
                             break;
-                        case "long" :
+                        case "lng" :
                             $this.val(data.lon);
                             break;
                     }
