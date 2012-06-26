@@ -69,47 +69,70 @@ class Vz_address_ft extends EE_Fieldtype {
     .vz_address_region_cell, .vz_address_postal_code_cell, .vz_address_lat_cell, .vz_address_lng_cell { float:left; width:48%; padding-right:2%; }
     .vz_address_country_cell { width:98%; padding-right:2%; }
 </style>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
-    var endpoint = "http://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q=";
-    $(".vz_address_get_missing").live("click", function(e) {
-        e.preventDefault();
-        $this = $(this);
-        $this.prepend(\'<img src="'.PATH_CP_GBL_IMG.'loader.gif" /> \');
-        var $fields = $this.parent().find("input,select"),
-            query = $fields.not(".vz_address_lat,.vz_address_lng").map(function() {
-                var val = $(this).val();
-                if (val) return encodeURI(val);
-            }).get().join(",%20");
-        $.getJSON(endpoint+query, function(data) {
-            if (data === [] || typeof(data[0]) == "undefined") return;
-            data = data[0];
-            $fields.each(function() {
-                var $this = $(this),
-                    name = $this.attr("class").replace("vz_address_", "");
-                if (name === "lat" || name === "lng" || $this.val() == "") {
-                    switch (name) {
-                        case "city" :
-                            $this.val(data.address.city || data.address.town);
-                            break;
-                        case "region" :
-                            $this.val(data.address.state || data.address.province);
-                            break;
-                        case "postal_code" :
-                            $this.val(data.address.postcode);
-                            break;
-                        case "lat" :
-                            $this.val(data.lat);
-                            break;
-                        case "lng" :
-                            $this.val(data.lon);
-                            break;
-                    }
+(function() {
+    var endpoint = "http://maps.googleapis.com/maps/api/geocode/json?&sensor=false&";
+    var Vz_address = {
+        geocoder : new google.maps.Geocoder(),
+
+        init : function() {
+            $(".vz_address_get_missing").live("click", Vz_address.get_missing);
+        },
+
+        get_missing : function(e) {
+            e.preventDefault();
+            $this = $(this);
+            $this.prepend(\'<img src="'.PATH_CP_GBL_IMG.'loader.gif" /> \');
+            var $fields = $this.parent().find("input,select"),
+                address = $fields.not(".vz_address_lat,.vz_address_lng")
+                    .map(function() {
+                        var val = $(this).val();
+                        if (val) return encodeURI(val);
+                    }).get().join(", ");
+            
+            Vz_address.geocoder.geocode( { "address": address}, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+                results = results[0];
+                // map.setCenter(results[0].geometry.location);
+                // var marker = new google.maps.Marker({
+                //     map: map,
+                //     position: results[0].geometry.location
+                // });
+                console.log(results);
+
+                var fields = {
+                    "city" : "locality",
+                    "region" : "administrative_area_level_1",
+                    "country" : "country",
+                    "postal_code" : "postal_code"
+                };
+                $.each(results.address_components, function(i, component) {
+                    $.each(fields, function(field_name, google_name) { 
+                        if (
+                            $.inArray(google_name, component.types) > -1 &&
+                            $fields.filter(".vz_address_"+field_name).first().val() === ""
+                        ) {
+                            $fields.filter(".vz_address_"+field_name).val(component.short_name);
+                        }
+                    });
+                });
+                if (typeof results.geometry.location === "object") {
+                    $fields.filter(".vz_address_lat").val(results.geometry.location.lat());
+                    $fields.filter(".vz_address_lng").val(results.geometry.location.lng());
                 }
+                $this.find("img").remove();
+              } else {
+                alert("Geocode was not successful for the following reason: " + status);
+              }
             });
-            $this.find("img").remove();
-        });
-        return false;
+            return false;
+        }
+    };
+    jQuery("document").ready(function($) {
+        Vz_address.init();
     });
+})();
 </script>');
         	
         	$this->cache['css'] = TRUE;
