@@ -59,7 +59,10 @@ class Vz_address_ft extends EE_Fieldtype {
         if ( !$this->cache['css'] )
         {
             $this->EE->cp->add_to_head('<style type="text/css">
-    .vz_address { padding-bottom: 0.5em; }
+    .publish_vz_address { position:relative; }
+    .publish_vz_address > div, .publish_vz_address > label { position:relative; z-index:5; }
+    .publish_vz_address > .vz_address_map_container { position:absolute; z-index:0; left:0; top:0; width:100%; height:100%; opacity:0.3; }
+    .vz_address { position:relative; z-index:5; padding-bottom: 0.5em; }
     .vz_address label { display:block; }
     .vz_address input, .vz_address select { width:99%; padding:4px; }
     .vz_address select { height:25px; font:normal 110% Arial, "Helvetica Neue", Helvetica, sans-serif; color:#5F6C74; border:1px solid #8195A0; -webkit-appearance:menulist-button; }
@@ -69,37 +72,44 @@ class Vz_address_ft extends EE_Fieldtype {
     .vz_address_region_cell, .vz_address_postal_code_cell, .vz_address_lat_cell, .vz_address_lng_cell { float:left; width:48%; padding-right:2%; }
     .vz_address_country_cell { width:98%; padding-right:2%; }
 </style>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPgPzHQ87MKqZRo-OZY0Ff5TTmK6DgqxU&sensor=false"></script>
 <script type="text/javascript">
 (function() {
-    var endpoint = "http://maps.googleapis.com/maps/api/geocode/json?&sensor=false&";
     var Vz_address = {
         geocoder : new google.maps.Geocoder(),
 
         init : function() {
+            Vz_address.map = new google.maps.Map(
+                $("<div class=\'vz_address_map_container\'/>").prependTo(".publish_vz_address").get(0),
+                {
+                    center: new google.maps.LatLng(25, 0),
+                    zoom: 2,
+                    disableDefaultUI: true,
+                    mapTypeId: google.maps.MapTypeId.TERRAIN
+                }
+            );
+
             $(".vz_address_get_missing").live("click", Vz_address.get_missing);
         },
 
         get_missing : function(e) {
             e.preventDefault();
             $this = $(this);
+
             $this.prepend(\'<img src="'.PATH_CP_GBL_IMG.'loader.gif" /> \');
             var $fields = $this.parent().find("input,select"),
-                address = $fields.not(".vz_address_lat,.vz_address_lng")
+                address = $fields.not(".vz_address_lat, .vz_address_lng")
                     .map(function() {
                         var val = $(this).val();
                         if (val) return encodeURI(val);
                     }).get().join(", ");
             
-            Vz_address.geocoder.geocode( { "address": address}, function(results, status) {
+            Vz_address.geocoder.geocode({"address": address}, function(results, status) {
               if (status == google.maps.GeocoderStatus.OK) {
                 results = results[0];
-                // map.setCenter(results[0].geometry.location);
-                // var marker = new google.maps.Marker({
-                //     map: map,
-                //     position: results[0].geometry.location
-                // });
-                console.log(results);
+
+                Vz_address.map.setCenter(results.geometry.location);
+                Vz_address.map.setZoom(14);
 
                 var fields = {
                     "city" : "locality",
@@ -107,6 +117,7 @@ class Vz_address_ft extends EE_Fieldtype {
                     "country" : "country",
                     "postal_code" : "postal_code"
                 };
+
                 $.each(results.address_components, function(i, component) {
                     $.each(fields, function(field_name, google_name) { 
                         if (
@@ -117,18 +128,20 @@ class Vz_address_ft extends EE_Fieldtype {
                         }
                     });
                 });
+
                 if (typeof results.geometry.location === "object") {
                     $fields.filter(".vz_address_lat").val(results.geometry.location.lat());
                     $fields.filter(".vz_address_lng").val(results.geometry.location.lng());
                 }
+
                 $this.find("img").remove();
               } else {
                 alert("Geocode was not successful for the following reason: " + status);
               }
             });
-            return false;
         }
     };
+
     jQuery("document").ready(function($) {
         Vz_address.init();
     });
@@ -153,7 +166,7 @@ class Vz_address_ft extends EE_Fieldtype {
 		
         $this->_include_css_js();
 		
-        $form = "";
+        $form = '<div id="vz_address_map_container"></div>';
         
         // Set default values
         if (!is_array($data)) {
