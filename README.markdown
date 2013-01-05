@@ -20,11 +20,11 @@ Will output the complete address, in a standard format. Use the `style=""` attri
     {address_field:country [code="yes"]}
 
 Output particular pieces of the address. If you use the parameter `code="yes"` on the country tag, you will get the the international country code rather than the full name.
-    
-    {address_field:map_url [source="google|yahoo|bing|mapquest"] [params=""]}
 
-Output a URL to the address on any one of a variety of mapping services. Specify which service you want to use with the `source` parameter (Google Maps is the default). Anything you put in the `params` parameter will be added to the end of the map URL, use it to specify zoom levels, map types, etc.
-    
+    {address_field:map_url [source="google|yahoo|bing|mapquest"] [include_name="yes"] [params=""]}
+
+Output a URL to the address on any one of a variety of mapping services. Specify which service you want to use with the `source` parameter (Google Maps is the default). Setting `include_name="yes"` will cause the "name" field to be included in the URL. This may give better or worse results, depending on whether the name is included in the mapping service's database. Anything you put in the `params` parameter will be added to the end of the map URL, use it to specify zoom levels, map types, etc.
+
     {address_field:static_map}
 
 Returns the URL to an static map image of the address. Currently, Google Maps' API is used, although I plan to add additional services in the future. There are a number of parameters you can use to modify the map display:
@@ -54,7 +54,7 @@ Note that you *must* use the `{exp:low_variables:parse}` syntax to parse VZ Addr
 For single tags:
 
     {exp:low_variables:parse var="address_field_name" [style="microformat|schema|rdfa|plain|inline"]}
-    
+
 For tag pairs:
 
     {exp:low_variables:parse var="address_field_name" multiple="yes"}
