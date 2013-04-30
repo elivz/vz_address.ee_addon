@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.3.3',
+        'version'   => '1.3.4',
     );
 
     public $has_array_data = TRUE;
@@ -29,12 +29,12 @@ class Vz_address_ft extends EE_Fieldtype {
         'country' => 'US'
     );
 
-	/**
-	 * Fieldtype Constructor
-	 */
-	function Vz_address_ft()
-	{
-        parent::EE_Fieldtype();
+    /**
+     * Fieldtype Constructor
+     */
+    function Vz_address_ft()
+    {
+        EE_Fieldtype::__construct();
 
         if (!isset($this->EE->session->cache['vz_address']))
         {
@@ -43,18 +43,18 @@ class Vz_address_ft extends EE_Fieldtype {
         $this->cache =& $this->EE->session->cache['vz_address'];
 
         // Cache the array of country names
-		$this->EE->lang->loadfile('vz_address');
+        $this->EE->lang->loadfile('vz_address');
         foreach ($this->country_codes as $country)
         {
             $this->cache['countries'][$country] = $this->EE->lang->line($country);
         }
-	}
+    }
 
-	/**
-	 * Include the CSS styles, but only once
-	 */
-	private function _include_css()
-	{
+    /**
+     * Include the CSS styles, but only once
+     */
+    private function _include_css()
+    {
         if ( !$this->cache['css'] )
         {
             $this->EE->cp->add_to_head('<style type="text/css">
@@ -78,41 +78,41 @@ class Vz_address_ft extends EE_Fieldtype {
                 .vz_address_previous label { display:inline; margin-right:4px; font:italic 1.25em "Times New Roman",Times,serif; }
             </style>');
 
-        	$this->cache['css'] = TRUE;
+            $this->cache['css'] = TRUE;
         }
     }
 
 
-	// --------------------------------------------------------------------
+    // --------------------------------------------------------------------
 
 
-	/**
+    /**
      * Field settings UI
      */
     function display_settings($settings)
     {
-		$this->EE->load->library('table');
-		$this->EE->lang->loadfile('vz_address');
+        $this->EE->load->library('table');
+        $this->EE->lang->loadfile('vz_address');
 
         $display_name = !empty($settings['display_name']);
-		$this->EE->table->add_row(array(
-			lang('display_name'),
-			form_radio('vz_address_display_name', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
-			form_label(lang('yes'), 'vz_address_display_previous_yes') .
-			'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
-			form_radio('vz_address_display_name', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
-			form_label(lang('no'), 'vz_address_display_name_no')
-		));
+        $this->EE->table->add_row(array(
+            lang('display_name'),
+            form_radio('vz_address_display_name', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
+            form_label(lang('yes'), 'vz_address_display_previous_yes') .
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+            form_radio('vz_address_display_name', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
+            form_label(lang('no'), 'vz_address_display_name_no')
+        ));
 
         $display_previous = !empty($settings['display_previous']);
-		$this->EE->table->add_row(array(
-			lang('display_previous'),
-			form_radio('vz_address_display_previous', 'y', $display_previous, 'id="vz_address_display_previous_yes"') . ' ' .
-			form_label(lang('yes'), 'vz_address_display_previous_yes') .
-			'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
-			form_radio('vz_address_display_previous', '', !$display_previous, 'id="vz_address_display_previous_no"') . ' ' .
-			form_label(lang('no'), 'vz_address_display_previous_no')
-		));
+        $this->EE->table->add_row(array(
+            lang('display_previous'),
+            form_radio('vz_address_display_previous', 'y', $display_previous, 'id="vz_address_display_previous_yes"') . ' ' .
+            form_label(lang('yes'), 'vz_address_display_previous_yes') .
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+            form_radio('vz_address_display_previous', '', !$display_previous, 'id="vz_address_display_previous_no"') . ' ' .
+            form_label(lang('no'), 'vz_address_display_previous_no')
+        ));
     }
 
     /**
@@ -126,12 +126,12 @@ class Vz_address_ft extends EE_Fieldtype {
         );
     }
 
-	/**
+    /**
      * Cell settings UI
      */
     function display_cell_settings($settings)
     {
-		$this->EE->lang->loadfile('vz_address');
+        $this->EE->lang->loadfile('vz_address');
 
         return array(
             array(lang('display_name'), form_checkbox('display_name', 'y', (!empty($settings['display_name']))))
@@ -144,27 +144,27 @@ class Vz_address_ft extends EE_Fieldtype {
     function display_var_settings($settings)
     {
         $display_name = !empty($settings['display_name']);
-		return array(array(
-			lang('display_name'),
-			form_radio('variable_settings[vz_address][display_name]', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
-			form_label(lang('yes'), 'vz_address_display_previous_yes') .
-			'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
-			form_radio('variable_settings[vz_address][display_name]', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
-			form_label(lang('no'), 'vz_address_display_name_no')
-		));
+        return array(array(
+            lang('display_name'),
+            form_radio('variable_settings[vz_address][display_name]', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
+            form_label(lang('yes'), 'vz_address_display_previous_yes') .
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+            form_radio('variable_settings[vz_address][display_name]', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
+            form_label(lang('no'), 'vz_address_display_name_no')
+        ));
     }
 
 
-	// --------------------------------------------------------------------
+    // --------------------------------------------------------------------
 
 
-	/**
+    /**
      * Generate the publish page UI
      */
     private function _address_form($name, $data, $is_cell=FALSE)
     {
-		$this->EE->load->helper('form');
-		$this->EE->lang->loadfile('vz_address');
+        $this->EE->load->helper('form');
+        $this->EE->lang->loadfile('vz_address');
 
         $this->_include_css();
 
@@ -268,7 +268,7 @@ class Vz_address_ft extends EE_Fieldtype {
     }
 
 
-	// --------------------------------------------------------------------
+    // --------------------------------------------------------------------
 
 
     /**
@@ -282,7 +282,7 @@ class Vz_address_ft extends EE_Fieldtype {
         }
         else
         {
-        	return json_encode($data);
+            return json_encode($data);
         }
     }
 
@@ -303,7 +303,7 @@ class Vz_address_ft extends EE_Fieldtype {
     }
 
 
-	// --------------------------------------------------------------------
+    // --------------------------------------------------------------------
 
 
     /**
@@ -313,7 +313,8 @@ class Vz_address_ft extends EE_Fieldtype {
     {
         $data = htmlspecialchars_decode($data);
         $decoded = (array) json_decode($data);
-        return $decoded ? $decoded : unserialize($data);
+        $decoded = $decoded ? $decoded : unserialize($data);
+        return array_merge($this->fields, $decoded);
     }
 
     /**
@@ -388,14 +389,14 @@ class Vz_address_ft extends EE_Fieldtype {
                         </div>";
                     if (!empty($address['name'])) $output .= "</div>";
             }
-    	}
-    	else // Tag pair
-    	{
+        }
+        else // Tag pair
+        {
             $address['country'] = $this->EE->lang->line($address['country']);
 
             // Replace the variables
             $output = $this->EE->TMPL->parse_variables($tagdata, array($address));
-    	}
+        }
 
         return $output;
     }
@@ -444,13 +445,13 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function replace_is_empty($address, $params=array(), $tagdata=FALSE)
     {
-		$address = array_merge($this->fields, $address);
+        $address = array_merge($this->fields, $address);
         return $address == $this->fields ? 'y' : '';
     }
 
     function replace_is_not_empty($address, $params=array(), $tagdata=FALSE)
     {
-		$address = array_merge($this->fields, $address);
+        $address = array_merge($this->fields, $address);
         return $address == $this->fields ? '' : 'y';
     }
 
@@ -528,9 +529,9 @@ class Vz_address_ft extends EE_Fieldtype {
         return $output;
     }
 
-	/**
+    /**
      * Display Low Variables tag
-	 */
+     */
     function display_var_tag($var_data, $tagparams, $tagdata)
     {
         $data = htmlspecialchars_decode($var_data);
