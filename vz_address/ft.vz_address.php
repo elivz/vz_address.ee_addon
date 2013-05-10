@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.3.4',
+        'version'   => '1.3.5',
     );
 
     public $has_array_data = TRUE;
