@@ -69,6 +69,11 @@ Installation
 
 Download and unzip the archive. Upload the `vz_address` folder to /system/expressionengine/third_party/.
 
+Requirements
+------------
+
+VZ Address requires PHP >= 5.2.
+
 Thanks
 ------
 

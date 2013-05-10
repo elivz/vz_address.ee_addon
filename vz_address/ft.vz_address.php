@@ -46,7 +46,7 @@ class Vz_address_ft extends EE_Fieldtype {
         $this->EE->lang->loadfile('vz_address');
         foreach ($this->country_codes as $country)
         {
-            $this->cache['countries'][$country] = $this->EE->lang->line($country);
+            $this->cache['countries'][$country] = $this->EE->lang->line('vz_address_'.$country);
         }
     }
 
@@ -96,7 +96,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
         $display_name = !empty($settings['display_name']);
         $this->EE->table->add_row(array(
-            lang('display_name'),
+            lang('vz_address_display_name'),
             form_radio('vz_address_display_name', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
             form_label(lang('yes'), 'vz_address_display_previous_yes') .
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
@@ -106,7 +106,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
         $display_previous = !empty($settings['display_previous']);
         $this->EE->table->add_row(array(
-            lang('display_previous'),
+            lang('vz_address_display_previous'),
             form_radio('vz_address_display_previous', 'y', $display_previous, 'id="vz_address_display_previous_yes"') . ' ' .
             form_label(lang('yes'), 'vz_address_display_previous_yes') .
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
@@ -134,7 +134,7 @@ class Vz_address_ft extends EE_Fieldtype {
         $this->EE->lang->loadfile('vz_address');
 
         return array(
-            array(lang('display_name'), form_checkbox('display_name', 'y', (!empty($settings['display_name']))))
+            array(lang('vz_address_display_name'), form_checkbox('display_name', 'y', (!empty($settings['display_name']))))
         );
     }
 
@@ -145,7 +145,7 @@ class Vz_address_ft extends EE_Fieldtype {
     {
         $display_name = !empty($settings['display_name']);
         return array(array(
-            lang('display_name'),
+            lang('vz_address_display_name'),
             form_radio('variable_settings[vz_address][display_name]', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
             form_label(lang('yes'), 'vz_address_display_previous_yes') .
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
@@ -172,9 +172,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
         // Set default values
         if (!is_array($data)) {
-            $data = htmlspecialchars_decode($data);
-            $decoded = (array) json_decode($data);
-            $data = $decoded ? $decoded : unserialize($data);
+            $data = $this->pre_process($data);
         }
         if (!is_array($data)) $data = array();
         $data = array_merge($this->fields, $data);
@@ -185,7 +183,7 @@ class Vz_address_ft extends EE_Fieldtype {
             if ($field == 'name' && empty($this->settings['display_name'])) continue;
 
             $form .= '<div class="vz_address vz_address_'.$field.($is_cell ? '_cell' : '_field').'">';
-            $form .= form_label($this->EE->lang->line($field), $name.'_'.$field);
+            $form .= form_label($this->EE->lang->line('vz_address_'.$field), $name.'_'.$field);
 
             if ($field == 'country')
             {
@@ -218,9 +216,7 @@ class Vz_address_ft extends EE_Fieldtype {
                 foreach ($query as $row)
                 {
                     $row = array_shift($row);
-                    $row = htmlspecialchars_decode($row);
-                    $decoded = (array) json_decode($row);
-                    $row = $decoded ? $decoded : unserialize($row);
+                    $row = $this->pre_process($row);
                     if (is_array($row) && $row != $this->fields)
                     {
                         $select_values[] = implode(', ', array_filter($row));
@@ -229,7 +225,7 @@ class Vz_address_ft extends EE_Fieldtype {
                 }
 
                 // Create the markup
-                $form .= '<div class="vz_address_previous"><label for="'.$name.'_previous">'.$this->EE->lang->line('previous').':</label> ';
+                $form .= '<div class="vz_address_previous"><label for="'.$name.'_previous">'.$this->EE->lang->line('vz_address_previous').':</label> ';
                 $form .= form_dropdown('', $select_values, NULL, 'id="'.$name.'_previous"');
                 $form .= '<script type="text/javascript">';
                 $form .= 'var vz_address_previous_values_'.$this->field_id.' = '.json_encode($json_values).';';
@@ -312,9 +308,9 @@ class Vz_address_ft extends EE_Fieldtype {
     function pre_process($data)
     {
         $data = htmlspecialchars_decode($data);
-        $decoded = (array) json_decode($data);
+        $decoded = json_decode($data);
         $decoded = $decoded ? $decoded : unserialize($data);
-        return array_merge($this->fields, $decoded);
+        return array_merge($this->fields, (array) $decoded);
     }
 
     /**
@@ -330,7 +326,7 @@ class Vz_address_ft extends EE_Fieldtype {
             switch ($style)
             {
                 case 'inline' :
-                    $output = (!empty($address['name']) ? $address['name'].', ' : '')."{$address['street']}, ".($address['street_2'] ? $address['street_2'].', ' : '')."{$address['city']}, {$address['region']} {$address['postal_code']}, {$this->EE->lang->line($address['country'])}";
+                    $output = (!empty($address['name']) ? $address['name'].', ' : '')."{$address['street']}, ".($address['street_2'] ? $address['street_2'].', ' : '')."{$address['city']}, {$address['region']} {$address['postal_code']}, {$this->EE->lang->line('vz_address_'.$address['country'])}";
                     break;
                 case 'plain' :
                     $output = "
@@ -338,7 +334,7 @@ class Vz_address_ft extends EE_Fieldtype {
                         {$address['street']}
                         {$address['street_2']}
                         {$address['city']}, {$address['region']} {$address['postal_code']}
-                        {$this->EE->lang->line($address['country'])}";
+                        {$this->EE->lang->line('vz_address_'.$address['country'])}";
                     break;
                 case 'rdfa' :
                     $output = "
@@ -353,7 +349,7 @@ class Vz_address_ft extends EE_Fieldtype {
                                 <span property='v:region' class='region'>{$address['region']}</span>
                                 <span property='v:postal-code' class='postal-code'>{$address['postal_code']}</span>
                             </div>
-                            <div property='v:contry-name' class='country'>{$this->EE->lang->line($address['country'])}</div>
+                            <div property='v:contry-name' class='country'>{$this->EE->lang->line('vz_address_'.$address['country'])}</div>
                         </div>";
                     break;
                 case 'schema' :
@@ -369,7 +365,7 @@ class Vz_address_ft extends EE_Fieldtype {
                                 <span itemprop='addressRegion' class='region'>{$address['region']}</span>
                                 <span itemprop='postalCode' class='postal-code'>{$address['postal_code']}</span>
                             </div>
-                            <div itemprop='addressCountry' class='country'>{$this->EE->lang->line($address['country'])}</div>
+                            <div itemprop='addressCountry' class='country'>{$this->EE->lang->line('vz_address_'.$address['country'])}</div>
                         </div>";
                     break;
                 case 'microformat' : default :
@@ -385,14 +381,14 @@ class Vz_address_ft extends EE_Fieldtype {
                                 <span class='region'>{$address['region']}</span>
                                 <span class='postal-code'>{$address['postal_code']}</span>
                             </div>
-                            <div class='country'>{$this->EE->lang->line($address['country'])}</div>
+                            <div class='country'>{$this->EE->lang->line('vz_address_'.$address['country'])}</div>
                         </div>";
                     if (!empty($address['name'])) $output .= "</div>";
             }
         }
         else // Tag pair
         {
-            $address['country'] = $this->EE->lang->line($address['country']);
+            $address['country'] = $this->EE->lang->line('vz_address_'.$address['country']);
 
             // Replace the variables
             $output = $this->EE->TMPL->parse_variables($tagdata, array($address));
@@ -436,7 +432,7 @@ class Vz_address_ft extends EE_Fieldtype {
         }
         else
         {
-            return $this->EE->lang->line($address['country']);
+            return $this->EE->lang->line('vz_address_'.$address['country']);
         }
     }
 
@@ -534,9 +530,7 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     function display_var_tag($var_data, $tagparams, $tagdata)
     {
-        $data = htmlspecialchars_decode($var_data);
-        $decoded = (array) json_decode($data);
-        $data = $decoded ? $decoded : unserialize($data);
+        $data = $this->pre_process($var_data);
         return $this->replace_tag($data, $tagparams, $tagdata);
     }
 }
