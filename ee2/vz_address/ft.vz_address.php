@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.3.5',
+        'version'   => '1.4.0',
     );
 
     public $has_array_data = TRUE;
@@ -32,30 +32,40 @@ class Vz_address_ft extends EE_Fieldtype {
     /**
      * Fieldtype Constructor
      */
-    function Vz_address_ft()
+    public function __construct()
     {
-        EE_Fieldtype::__construct();
+        parent::__construct();
 
-        if (!isset($this->EE->session->cache['vz_address']))
-        {
-            $this->EE->session->cache['vz_address'] = array('css' => FALSE, 'countries' => array());
-        }
-        $this->cache =& $this->EE->session->cache['vz_address'];
+        $this->EE->lang->loadfile('vz_address');
 
         // Cache the array of country names
-        $this->EE->lang->loadfile('vz_address');
+        $countries = array();
         foreach ($this->country_codes as $country)
         {
-            $this->cache['countries'][$country] = $this->EE->lang->line('vz_address_'.$country);
+            $countries[$country] = $this->EE->lang->line('vz_address_'.$country);
         }
+        $this->EE->session->set_cache(__CLASS__, 'countries', $countries);
     }
 
-    /**
-     * Include the CSS styles, but only once
+    /*
+     * Register acceptable content types
      */
-    private function _include_css()
+    public function accepts_content_type($name)
     {
-        if ( !$this->cache['css'] )
+        return ($name == 'channel' || $name == 'grid');
+    }
+
+
+    // --------------------------------------------------------------------
+
+
+    /**
+     * Include the JS and CSS files,
+     * but only the first time
+     */
+    private function _include_css($content_type='field')
+    {
+        if ( ! $this->EE->session->cache(__CLASS__, 'css'))
         {
             $this->EE->cp->add_to_head('<style type="text/css">
                 .vz_address { padding-bottom:0.5em; }
@@ -69,16 +79,16 @@ class Vz_address_ft extends EE_Fieldtype {
                 .vz_address_postal_code_field { float:right; width:24%; }
                 .vz_address_region_field input, .vz_address_postal_code_field input { width:94%; }
                 .vz_address_country_field { width:48%; }
-                .matrix .vz_address input { width:98.5%; }
-                .matrix .vz_address select { width:100%; }
+                .matrix .vz_address input, .grid_cell .vz_address input { width:98.5%; }
+                .matrix .vz_address select, .grid_cell .vz_address select { width:100%; }
                 .vz_address_region_cell { float:left; width:48%; }
                 .vz_address_postal_code_cell { float:right; width:48%; }
-                .matrix .vz_address_region_cell input, .matrix .vz_address_postal_code_cell input { width:97%; }
+                .matrix .vz_address_region_cell input, .matrix .vz_address_postal_code_cell input, .grid_cell .vz_address_region_cell input, .grid_cell .vz_address_postal_code_cell input { width:97%; }
                 .vz_address_previous { margin-top:1em; padding:4px 5px; background:#E1E8ED; border:1px solid #D0D7DF; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; }
                 .vz_address_previous label { display:inline; margin-right:4px; font:italic 1.25em "Times New Roman",Times,serif; }
             </style>');
 
-            $this->cache['css'] = TRUE;
+            $this->EE->session->set_cache(__CLASS__, 'css', TRUE);
         }
     }
 
@@ -89,7 +99,7 @@ class Vz_address_ft extends EE_Fieldtype {
     /**
      * Field settings UI
      */
-    function display_settings($settings)
+    public function display_settings($settings)
     {
         $this->EE->load->library('table');
         $this->EE->lang->loadfile('vz_address');
@@ -116,34 +126,44 @@ class Vz_address_ft extends EE_Fieldtype {
     }
 
     /**
-     * Save Field Settings
+     * Display Grid Cell Settings
      */
-    function save_settings()
+    public function grid_display_settings($settings)
     {
+        $display_name = ! empty($settings['display_name']);
+
         return array(
-            'display_name' => $this->EE->input->post('vz_address_display_name'),
-            'display_previous' => $this->EE->input->post('vz_address_display_previous')
+            $this->grid_checkbox_row(
+                lang('vz_address_display_name'),
+                'display_name',
+                'y',
+                $display_name
+            )
         );
     }
 
+
     /**
-     * Cell settings UI
+     * Display Matrix Cell Settings
      */
-    function display_cell_settings($settings)
+    public function display_cell_settings($settings)
     {
-        $this->EE->lang->loadfile('vz_address');
+        $display_name = ! empty($settings['display_name']);
 
         return array(
-            array(lang('vz_address_display_name'), form_checkbox('display_name', 'y', (!empty($settings['display_name']))))
+            array(
+                lang('vz_address_display_name'),
+                form_checkbox('display_name', 'y', $display_name)
+            )
         );
     }
 
     /**
      * Low Variables settings UI
      */
-    function display_var_settings($settings)
+    public function display_var_settings($settings)
     {
-        $display_name = !empty($settings['display_name']);
+        $display_name = ! empty($settings['display_name']);
         return array(array(
             lang('vz_address_display_name'),
             form_radio('variable_settings[vz_address][display_name]', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
@@ -159,13 +179,58 @@ class Vz_address_ft extends EE_Fieldtype {
 
 
     /**
+     * Save Field Settings
+     */
+    function save_settings()
+    {
+        return array(
+            'display_name' => $this->EE->input->post('vz_address_display_name'),
+            'display_previous' => $this->EE->input->post('vz_address_display_previous')
+        );
+    }
+
+
+    // --------------------------------------------------------------------
+
+
+    /**
+     * Display Field
+     */
+    public function display_field($field_data)
+    {
+        return $this->_address_form($this->field_name, $field_data);
+    }
+
+    /**
+     * Display Grid Cell
+     */
+    public function grid_display_field($field_data)
+    {
+        return $this->_address_form($this->field_name, $field_data, TRUE);
+    }
+
+    /**
+     * Display Matrix Cell
+     */
+    public function display_cell($cell_data)
+    {
+        return $this->_address_form($this->cell_name, $cell_data, TRUE);
+    }
+
+    /**
+     * Display for Low Variables
+     */
+    public function display_var_field($field_data)
+    {
+        return $this->_address_form($this->field_name, $field_data);
+    }
+
+    /**
      * Generate the publish page UI
      */
     private function _address_form($name, $data, $is_cell=FALSE)
     {
         $this->EE->load->helper('form');
-        $this->EE->lang->loadfile('vz_address');
-
         $this->_include_css();
 
         $form = '';
@@ -188,7 +253,7 @@ class Vz_address_ft extends EE_Fieldtype {
             if ($field == 'country')
             {
                 // Output a select box for the country
-                $form .= form_dropdown($name.'['.$field.']', $this->cache['countries'], $data[$field], 'id="'.$name.'_'.$field.'"');
+                $form .= form_dropdown($name.'['.$field.']', $this->EE->session->cache(__CLASS__, 'countries'), $data[$field], 'id="'.$name.'_'.$field.'"');
             }
             else
             {
@@ -199,7 +264,7 @@ class Vz_address_ft extends EE_Fieldtype {
         }
 
         // Allow for picking from previous addresses
-        if (!empty($this->settings['display_previous']))
+        if ( ! empty($this->settings['display_previous']))
         {
             // Get the previous values from the database
             $field_name = 'field_id_'.$this->field_id;
@@ -239,30 +304,6 @@ class Vz_address_ft extends EE_Fieldtype {
         return $form;
     }
 
-    /**
-     * Display Field
-     */
-    function display_field($field_data)
-    {
-        return $this->_address_form($this->field_name, $field_data);
-    }
-
-    /**
-     * Display Cell
-     */
-    function display_cell($cell_data)
-    {
-        return $this->_address_form($this->cell_name, $cell_data, TRUE);
-    }
-
-    /**
-     * Display for Low Variables
-     */
-    function display_var_field($field_data)
-    {
-        return $this->_address_form($this->field_name, $field_data);
-    }
-
 
     // --------------------------------------------------------------------
 
@@ -270,7 +311,7 @@ class Vz_address_ft extends EE_Fieldtype {
     /**
      * Save Field
      */
-    function save($data)
+    public function save($data)
     {
         if ($data == $this->fields)
         {
@@ -285,7 +326,7 @@ class Vz_address_ft extends EE_Fieldtype {
     /**
      * Save Cell
      */
-    function save_cell($data)
+    public function save_cell($data)
     {
         return $this->save($data);
     }
@@ -293,7 +334,7 @@ class Vz_address_ft extends EE_Fieldtype {
     /**
      * Save Low Variable
      */
-    function save_var_field($data)
+    public function save_var_field($data)
     {
         return $this->save($data);
     }
@@ -305,7 +346,7 @@ class Vz_address_ft extends EE_Fieldtype {
     /**
      * Unserialize the data
      */
-    function pre_process($data)
+    public function pre_process($data)
     {
         $data = htmlspecialchars_decode($data);
         $decoded = json_decode($data);
@@ -313,10 +354,14 @@ class Vz_address_ft extends EE_Fieldtype {
         return array_merge($this->fields, (array) $decoded);
     }
 
+
+    // --------------------------------------------------------------------
+
+
     /**
      * Display Tag
      */
-    function replace_tag($address, $params=array(), $tagdata=FALSE)
+    public function replace_tag($address, $params=array(), $tagdata=FALSE)
     {
         $wrapper_attr = isset($params['wrapper_attr']) ? $params['wrapper_attr'] : FALSE;
         $style = isset($params['style']) ? $params['style'] : 'microformat';
@@ -400,31 +445,37 @@ class Vz_address_ft extends EE_Fieldtype {
     /*
      * Individual address pieces
      */
-    function replace_name($address, $params=array(), $tagdata=FALSE)
+    public function replace_name($address, $params=array(), $tagdata=FALSE)
     {
         return !empty($address['name']) ? $address['name'] : '';
     }
-    function replace_street($address, $params=array(), $tagdata=FALSE)
+
+    public function replace_street($address, $params=array(), $tagdata=FALSE)
     {
         return $address['street'];
     }
-    function replace_street_2($address, $params=array(), $tagdata=FALSE)
+
+    public function replace_street_2($address, $params=array(), $tagdata=FALSE)
     {
         return $address['street_2'];
     }
-    function replace_city($address, $params=array(), $tagdata=FALSE)
+
+    public function replace_city($address, $params=array(), $tagdata=FALSE)
     {
         return $address['city'];
     }
-    function replace_region($address, $params=array(), $tagdata=FALSE)
+
+    public function replace_region($address, $params=array(), $tagdata=FALSE)
     {
         return $address['region'];
     }
-    function replace_postal_code($address, $params=array(), $tagdata=FALSE)
+
+    public function replace_postal_code($address, $params=array(), $tagdata=FALSE)
     {
         return $address['postal_code'];
     }
-    function replace_country($address, $params=array(), $tagdata=FALSE)
+
+    public function replace_country($address, $params=array(), $tagdata=FALSE)
     {
         if (isset($params['code']) && $params['code'] == 'yes')
         {
@@ -439,13 +490,13 @@ class Vz_address_ft extends EE_Fieldtype {
     /*
      * Check if the address is empty
      */
-    function replace_is_empty($address, $params=array(), $tagdata=FALSE)
+    public function replace_is_empty($address, $params=array(), $tagdata=FALSE)
     {
         $address = array_merge($this->fields, $address);
         return $address == $this->fields ? 'y' : '';
     }
 
-    function replace_is_not_empty($address, $params=array(), $tagdata=FALSE)
+    public function replace_is_not_empty($address, $params=array(), $tagdata=FALSE)
     {
         $address = array_merge($this->fields, $address);
         return $address == $this->fields ? '' : 'y';
@@ -454,7 +505,7 @@ class Vz_address_ft extends EE_Fieldtype {
     /*
      * Output a URL to the address in one of several mapping websites
      */
-    function replace_map_url($address, $params=array(), $tagdata=FALSE)
+    public function replace_map_url($address, $params=array(), $tagdata=FALSE)
     {
         $include_name = isset($params['include_name']) && ($params['include_name'] == 'yes' || $params['include_name'] == 'true');
         $source = isset($params['source']) ? strtolower($params['source']) : 'google';
@@ -486,16 +537,16 @@ class Vz_address_ft extends EE_Fieldtype {
     /*
      * Output a static map image
      */
-    function replace_static_map($address, $params=array(), $tagdata=FALSE)
+    public function replace_static_map($address, $params=array(), $tagdata=FALSE)
     {
         $source = isset($params['source']) ? strtolower($params['source']) : 'google';
-        $width = isset($params['width']) ? strtolower($params['width']) : '400';
+        $width  = isset($params['width']) ? strtolower($params['width']) : '400';
         $height = isset($params['height']) ? strtolower($params['height']) : '200';
-        $zoom = isset($params['zoom']) ? strtolower($params['zoom']) : '14';
-        $type = isset($params['type']) ? strtolower($params['type']) : 'roadmap';
-        $size = isset($params['marker:size']) ? strtolower($params['marker:size']) : FALSE;
-        $label = isset($params['marker:label']) ? strtoupper($params['marker:label']) : FALSE;
-        $color = isset($params['marker:color']) ? strtolower($params['marker:color']) : FALSE;
+        $zoom   = isset($params['zoom']) ? strtolower($params['zoom']) : '14';
+        $type   = isset($params['type']) ? strtolower($params['type']) : 'roadmap';
+        $size   = isset($params['marker:size']) ? strtolower($params['marker:size']) : FALSE;
+        $label  = isset($params['marker:label']) ? strtoupper($params['marker:label']) : FALSE;
+        $color  = isset($params['marker:color']) ? strtolower($params['marker:color']) : FALSE;
 
         // Normalize the color parameter
         $color = str_replace('#', '0x', $color);
@@ -528,7 +579,7 @@ class Vz_address_ft extends EE_Fieldtype {
     /**
      * Display Low Variables tag
      */
-    function display_var_tag($var_data, $tagparams, $tagdata)
+    public function display_var_tag($var_data, $tagparams, $tagdata)
     {
         $data = $this->pre_process($var_data);
         return $this->replace_tag($data, $tagparams, $tagdata);

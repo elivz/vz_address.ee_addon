@@ -1,7 +1,7 @@
 VZ Address
 ==========
 
-An address fieldtype for Expression Engine 2. Also works as a Matrix cell-type or a Low Variable.
+A simple address fieldtype for Expression Engine. Also supports Grid, Matrix, and Low Variables.
 
 Template Tags
 -------------
