@@ -3,11 +3,11 @@
 $lang = array(
 
     'vz_address_name' => 'Name',
-    'vz_address_street' => 'Address Line 1',
-    'vz_address_street_2' => 'Address Line 2',
+    'vz_address_street' => 'Street Address',
+    'vz_address_street_2' => 'Street Address Line 2',
     'vz_address_city' => 'City',
     'vz_address_region' => 'State/Province',
-    'vz_address_postal_code' => 'Postal Code',
+    'vz_address_postal_code' => 'Zip/Postal Code',
     'vz_address_country' => 'Country',
 
     'vz_address_display_name' => 'Display the \'Name\' field?',
