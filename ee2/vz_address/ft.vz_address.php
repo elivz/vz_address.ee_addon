@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.5.0',
+        'version'   => '1.5.1',
     );
 
     public $has_array_data = TRUE;
@@ -27,7 +27,7 @@ class Vz_address_ft extends EE_Fieldtype {
         'city'        => '',
         'region'      => '',
         'postal_code' => '',
-        'country'     => ''
+        'country'     => 'US'
     );
 
 
@@ -101,20 +101,20 @@ class Vz_address_ft extends EE_Fieldtype {
 
         ee()->table->add_row(array(
             lang('vz_address_display_name'),
-            form_radio('vz_address_display_name', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
-            form_label(lang('yes'), 'vz_address_display_previous_yes') .
+            form_radio('display_name', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
+            form_label(lang('yes'), 'display_previous_yes') .
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
-            form_radio('vz_address_display_name', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
+            form_radio('display_name', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
             form_label(lang('no'), 'vz_address_display_name_no')
         ));
 
         ee()->table->add_row(array(
-            lang('vz_address_display_previous'),
-            form_radio('vz_address_display_previous', 'y', $display_previous, 'id="vz_address_display_previous_yes"') . ' ' .
-            form_label(lang('yes'), 'vz_address_display_previous_yes') .
+            lang('vz_address_display_name'),
+            form_radio('display_previous', 'y', $display_previous, 'id="display_previous_yes"') . ' ' .
+            form_label(lang('yes'), 'display_previous_yes') .
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
-            form_radio('vz_address_display_previous', '', !$display_previous, 'id="vz_address_display_previous_no"') . ' ' .
-            form_label(lang('no'), 'vz_address_display_previous_no')
+            form_radio('display_previous', '', !$display_previous, 'id="display_previous_no"') . ' ' .
+            form_label(lang('no'), 'display_previous_no')
         ));
     }
 
@@ -128,7 +128,7 @@ class Vz_address_ft extends EE_Fieldtype {
         return array(
             $this->grid_checkbox_row(
                 lang('vz_address_display_name'),
-                'vz_address_display_name',
+                'display_name',
                 'y',
                 $display_name
             )
@@ -160,11 +160,11 @@ class Vz_address_ft extends EE_Fieldtype {
 
         return array(array(
             lang('vz_address_display_name'),
-            form_radio('variable_settings[vz_address][display_name]', 'y', $display_name, 'id="vz_address_display_name_yes"') . ' ' .
-            form_label(lang('yes'), 'vz_address_display_previous_yes') .
+            form_radio('variable_settings[vz_address][display_name]', 'y', $display_name, 'id="display_name_yes"') . ' ' .
+            form_label(lang('yes'), 'display_previous_yes') .
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
-            form_radio('variable_settings[vz_address][display_name]', '', !$display_name, 'id="vz_address_display_name_no"') . ' ' .
-            form_label(lang('no'), 'vz_address_display_name_no')
+            form_radio('variable_settings[vz_address][display_name]', '', !$display_name, 'id="display_name_no"') . ' ' .
+            form_label(lang('no'), 'display_name_no')
         ));
     }
 
@@ -178,8 +178,8 @@ class Vz_address_ft extends EE_Fieldtype {
     function save_settings($settings)
     {
         return array(
-            'display_name'     => empty($settings['vz_address_display_name']) ? '' : 'y',
-            'display_previous' => empty($settings['vz_address_display_previous']) ? '' : 'y',
+            'display_name'     => empty($settings['display_name']) ? '' : 'y',
+            'display_previous' => empty($settings['display_previous']) ? '' : 'y',
         );
     }
 
