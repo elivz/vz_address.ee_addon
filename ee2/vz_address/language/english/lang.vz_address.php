@@ -2,6 +2,8 @@
 
 $lang = array(
 
+    'vz_address_required' => 'This field is required',
+
     'vz_address_name' => 'Name',
     'vz_address_street' => 'Street Address',
     'vz_address_street_2' => 'Street Address Line 2',

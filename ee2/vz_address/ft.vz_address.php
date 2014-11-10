@@ -329,14 +329,15 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     public function validate($data)
     {
-        ee()->lang->loadfile('vz_address');
-
-        if ( ! empty($this->settings['field_required']) || ! empty($this->settings['col_required']) )
-        {
+        if (
+            (isset($this->settings['field_required']) && $this->settings['field_required'] == 'y')
+            ||
+            (isset($this->settings['col_required']) && $this->settings['col_required'] == 'y' )
+        ) {
             // If the field is required, we need at least a street address and city
             if ( empty($data['street']) || empty($data['city']) )
             {
-                return lang('grid_field_required');
+                return lang('vz_address_required');
             }
         }
 
