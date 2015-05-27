@@ -398,7 +398,7 @@ class Vz_address_ft extends EE_Fieldtype {
      */
     public function pre_process($data)
     {
-        $data = htmlspecialchars_decode($data);
+        $data = html_entity_decode($data, ENT_QUOTES);
         $decoded = json_decode($data);
         $decoded = $decoded ? $decoded : @unserialize($data);
         return array_merge($this->fields, (array) $decoded);
