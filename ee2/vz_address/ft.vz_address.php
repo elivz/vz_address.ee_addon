@@ -536,7 +536,7 @@ class Vz_address_ft extends EE_Fieldtype {
         }
         else
         {
-            return $address['country_name'];
+            return ee()->lang->line('vz_address_'.$address['country']);
         }
     }
 
