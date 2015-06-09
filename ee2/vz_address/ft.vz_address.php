@@ -12,7 +12,7 @@ class Vz_address_ft extends EE_Fieldtype {
 
     public $info = array(
         'name'      => 'VZ Address',
-        'version'   => '1.5.3',
+        'version'   => '1.5.4',
     );
 
     public $has_array_data = true;
@@ -401,7 +401,9 @@ class Vz_address_ft extends EE_Fieldtype {
         $data = html_entity_decode($data, ENT_QUOTES);
         $decoded = json_decode($data);
         $decoded = $decoded ? $decoded : @unserialize($data);
-        return array_merge($this->fields, (array) $decoded);
+        $address = array_merge($this->fields, (array) $decoded);
+        $address['country_name'] = ee()->lang->line('vz_address_'.$address['country']);
+        return $address;
     }
 
 
@@ -415,7 +417,6 @@ class Vz_address_ft extends EE_Fieldtype {
     {
         $wrapper_attr = isset($params['wrapper_attr']) ? $params['wrapper_attr'] : false;
         $style = isset($params['style']) ? $params['style'] : 'microformat';
-        $address['country_name'] = ee()->lang->line('vz_address_'.$address['country']);
 
         if (!$tagdata) // Single tag
         {
