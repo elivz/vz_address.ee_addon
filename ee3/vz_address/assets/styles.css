@@ -1,0 +1,127 @@
+.publish_vz_address fieldset.holder {
+    margin-top: 11px;
+}
+
+.vz_address {
+    position: relative;
+    padding-bottom: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.vz_address label {
+    position: absolute;
+    bottom: 8px;
+    padding-left: 3px;
+    font-size: 9px !important;
+    line-height: 12px !important;
+    text-transform: uppercase;
+    color: #808996;
+}
+
+.vz_address input,
+.vz_address select {
+    width: 100%;
+}
+
+.vz_address_street_field,
+.vz_address_city_field {
+    float: left;
+    width: 50%;
+    padding-right: 0.75em;
+}
+
+.vz_address_street_2_field {
+    float: right;
+    width: 50%;
+    padding-left: 0.75em;
+}
+
+.vz_address_region_field,
+.vz_address_postal_code_field {
+    float: left;
+    width: 25%;
+    padding-left: 0.75em;
+}
+
+.vz_address_region_field {
+    padding-right: 0.75em;
+}
+
+.vz_address_country_field {
+    clear: both;
+    width: 50%;
+    padding-right: 0.75em;
+}
+
+.vz_address_previous {
+    margin-top: 6px;
+    padding: 4px 6px;
+    background: #E1E8ED;
+    border: 1px solid #D0D7DF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.vz_address_previous label {
+    display: inline;
+    margin-right: 4px;
+    font: italic 14px "Times New Roman",Times,serif;
+}
+
+/* Cell styling */
+
+.matrix .vz_address,
+.grid_cell .vz_address {
+    height: 38px;
+    padding-bottom: 17px;
+    font-size: 12px;
+}
+
+.matrix .vz_address label,
+.grid_cell .vz_address label {
+    bottom: 5px;
+    padding-left: 1px;
+}
+
+.matrix .vz_address input,
+.grid_cell .vz_address input {
+    border-color: #c8cfd8;
+}
+.matrix .vz_address input,
+.matrix .vz_address input:focus,
+.grid_cell .vz_address input,
+.grid_cell .vz_address input:focus {
+    padding: 3px 1px 2px;
+    border-width: 0 0 1px;
+    border-radius: 0;
+}
+
+.matrix .vz_address input {
+    font-family: 'Lucida Grande',sans-serif;
+    font-size: 11px;
+}
+
+.grid_cell .vz_address_name_cell {
+    margin-top: 4px;
+}
+
+.vz_address_region_cell {
+    float: left;
+    width: 50%;
+    padding-right: 0.75em;
+}
+
+.vz_address_postal_code_cell {
+    float: right;
+    width: 50%;
+    padding-left: 0.75em;
+}
+
+.vz_address_country_cell {
+    clear: both;
+    width: 50%;
+    padding-right: 0.75em;
+}
