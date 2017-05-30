@@ -78,7 +78,9 @@ For tag pairs:
 Installation
 ------------
 
-Download and unzip the archive. Upload the `vz_address` folder to /system/expressionengine/third_party/.
+Download and unzip the archive. 
+For ee2, upload the `vz_address` folder to /system/expressionengine/third_party/.
+For ee3, upload it instead to /system/user/addons/ and install it in the Add-on Manager.
 
 Requirements
 ------------
