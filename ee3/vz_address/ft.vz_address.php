@@ -40,7 +40,6 @@ class Vz_address_ft extends EE_Fieldtype {
     public function __construct()
     {
         parent::__construct();
-        $this->EE =& get_instance();
 
         ee()->lang->loadfile('vz_address');
 
@@ -77,7 +76,7 @@ class Vz_address_ft extends EE_Fieldtype {
             ee()->cp->add_to_head('<style type="text/css">' . $css . '</style>');
 
             // Output Javascript
-            $this->EE->cp->add_js_script(
+            ee()->cp->add_js_script(
                 array('ui' => array('core', 'autocomplete'))
             );
             $scripts = file_get_contents(PATH_THIRD . '/vz_address/assets/scripts' . ($this->debug ? '' : '.min') . '.js');
